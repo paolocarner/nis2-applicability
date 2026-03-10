@@ -1,0 +1,1164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Does NIS2 Apply to You? — Self-Assessment</title>
+<!--
+  ============================================================================
+  NIS2 APPLICABILITY SELF-ASSESSMENT TOOL v1.0
+  ============================================================================
+
+  PURPOSE:
+    Allows EU-based companies to self-assess whether NIS2 (Directive 2022/2555)
+    likely applies to them, based on: country HQ, sector, employee count,
+    and annual revenue.
+
+  IMPORTANT LIMITATIONS:
+    1. NIS2 has been transposed differently across EU member states. This tool
+       uses best-available knowledge of transposition status as of mid-2025.
+       Always verify against your national competent authority.
+    2. Some countries (e.g. Netherlands) had not fully transposed NIS2 as of
+       the tool knowledge date. Status may have changed.
+    3. "Criticality override" entities may be in scope regardless of size.
+    4. This tool is NOT legal advice. Output must be reviewed by qualified
+       legal/compliance professionals before acting on it.
+    5. Email sending is NOT implemented in this static file. The sendEmail()
+       function is a STUB — wire it to your backend (SendGrid, Mailchimp, etc.)
+       before deploying. Collecting emails without a working privacy notice
+       and GDPR-compliant consent mechanism is a compliance risk.
+
+  ARCHITECTURE:
+    - Pure HTML/CSS/JS — no dependencies, no build step
+    - Step-by-step wizard with progress bar
+    - Logic engine: countryData[] + sectorData[] + threshold rules
+    - Result engine: 4 outcome states (in-scope, possibly, exempt, check-law)
+    - Email stub: clearly marked for backend integration
+
+  SECURITY NOTES:
+    - All user input is escaped before rendering (escapeHtml())
+    - No eval() or innerHTML with raw user strings
+    - Email input validated client-side (format only, not deliverability)
+    - No localStorage/sessionStorage used
+    - No external scripts loaded (only Google Fonts CSS)
+    - XSS mitigated throughout
+
+  KNOWN WEAKNESSES / TODO:
+    - Transposition data will go stale — needs a maintenance workflow
+    - "Criticality override" (Art. 2(2)) for critical entities regardless of
+      size is flagged but not deeply modelled per-country
+    - Does not model NIS2 Art. 2(2)(a)-(f) special cases (critical sole
+      providers, national security implications, etc.) — needs human review
+    - Revenue threshold uses EU definition (net turnover, not EBITDA)
+    - Multi-country operations: tool only asks for HQ country — cross-border
+      entities need separate advice
+    - The PDF guide referenced in the CTA must be created before deploying
+    - CTA href "#" is a placeholder — replace with real booking page URL
+
+  ============================================================================
+-->
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@400;500&display=swap');
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg:          #f5f2ed;
+    --bg-card:     #fffdf9;
+    --border:      #ddd8ce;
+    --border-dark: #c4bdb0;
+    --text:        #1a1714;
+    --text-mid:    #4a4540;
+    --text-dim:    #7a746c;
+    --accent:      #1a3a2a;
+    --accent-l:    #2d5c42;
+    --accent-h:    #234d38;
+    --red:         #c0392b;
+    --amber:       #9a7200;
+    --green:       #1a5c30;
+    --green-bg:    #eaf3ed;
+    --amber-bg:    #fdf6e3;
+    --red-bg:      #fdf0ee;
+    --check-bg:    #f0ede8;
+    --font:        'Syne', sans-serif;
+    --mono:        'DM Mono', monospace;
+    --radius:      12px;
+    --radius-sm:   6px;
+    --shadow:      0 2px 16px rgba(26,23,20,0.08);
+  }
+
+  html { font-size: 15px; scroll-behavior: smooth; }
+
+  body {
+    font-family: var(--font);
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      radial-gradient(circle at 15% 15%, rgba(26,58,42,0.05) 0%, transparent 50%),
+      radial-gradient(circle at 85% 80%, rgba(26,58,42,0.04) 0%, transparent 40%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .shell {
+    position: relative;
+    z-index: 1;
+    max-width: 620px;
+    margin: 0 auto;
+    padding: 3rem 1.5rem 5rem;
+  }
+
+  /* BRAND */
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    margin-bottom: 3rem;
+  }
+
+  .brand-mark {
+    width: 34px;
+    height: 34px;
+    background: var(--accent);
+    border-radius: 7px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .brand-mark svg { width: 18px; height: 18px; }
+
+  .brand-name {
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-mid);
+  }
+
+  /* PROGRESS */
+  .progress-wrap { margin-bottom: 2.25rem; }
+
+  .progress-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 0.55rem;
+  }
+
+  .progress-label {
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+  }
+
+  .progress-count {
+    font-family: var(--mono);
+    font-size: 0.7rem;
+    color: var(--text-dim);
+  }
+
+  .progress-track {
+    height: 3px;
+    background: var(--border);
+    border-radius: 99px;
+    overflow: hidden;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: var(--accent);
+    border-radius: 99px;
+    transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  /* CARD */
+  .card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 2.25rem 2rem;
+    box-shadow: var(--shadow);
+    animation: slideIn 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  @keyframes slideIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .step-eyebrow {
+    font-family: var(--mono);
+    font-size: 0.68rem;
+    color: var(--accent-l);
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    margin-bottom: 0.5rem;
+  }
+
+  .step-title {
+    font-size: 1.3rem;
+    font-weight: 700;
+    line-height: 1.3;
+    margin-bottom: 0.5rem;
+    letter-spacing: -0.02em;
+  }
+
+  .step-desc {
+    font-size: 0.87rem;
+    color: var(--text-dim);
+    line-height: 1.6;
+    margin-bottom: 1.75rem;
+  }
+
+  /* FIELD */
+  .field label {
+    display: block;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-mid);
+    margin-bottom: 0.45rem;
+  }
+
+  .field select,
+  .field input[type="email"] {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    font-family: var(--font);
+    font-size: 0.95rem;
+    color: var(--text);
+    background: var(--bg);
+    border: 1.5px solid var(--border-dark);
+    border-radius: var(--radius-sm);
+    outline: none;
+    appearance: none;
+    -webkit-appearance: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+
+  .field select {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%237a746c' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0.85rem center;
+    padding-right: 2.5rem;
+    cursor: pointer;
+  }
+
+  .field select:focus,
+  .field input[type="email"]:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(26,58,42,0.1);
+  }
+
+  .field select option,
+  .field select optgroup { background: var(--bg-card); }
+
+  .field-error {
+    font-size: 0.75rem;
+    color: var(--red);
+    margin-top: 0.35rem;
+    display: none;
+  }
+
+  .field.error select,
+  .field.error input { border-color: var(--red) !important; }
+
+  .field.error .field-error { display: block; }
+
+  /* RADIO CARDS */
+  .radio-group {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.6rem;
+    margin-bottom: 1.75rem;
+  }
+
+  .radio-card { position: relative; cursor: pointer; }
+
+  .radio-card input[type="radio"] {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+  }
+
+  .radio-card-label {
+    display: block;
+    padding: 0.85rem 0.75rem;
+    border: 1.5px solid var(--border-dark);
+    border-radius: var(--radius-sm);
+    background: var(--bg);
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: var(--text-mid);
+    text-align: center;
+    transition: all 0.15s;
+    cursor: pointer;
+    user-select: none;
+    line-height: 1.3;
+  }
+
+  .radio-card input[type="radio"]:checked + .radio-card-label {
+    border-color: var(--accent);
+    background: var(--accent);
+    color: #fff;
+  }
+
+  .radio-card-label:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
+  .radio-card input[type="radio"]:checked + .radio-card-label:hover {
+    color: #fff;
+  }
+
+  /* BUTTONS */
+  .btn-row {
+    display: flex;
+    gap: 0.6rem;
+    margin-top: 1.5rem;
+  }
+
+  .btn {
+    font-family: var(--font);
+    font-size: 0.9rem;
+    font-weight: 700;
+    padding: 0.75rem 1.5rem;
+    border-radius: var(--radius-sm);
+    border: 1.5px solid transparent;
+    cursor: pointer;
+    transition: all 0.15s;
+    letter-spacing: 0.01em;
+  }
+
+  .btn-primary {
+    background: var(--accent);
+    color: #fff;
+    border-color: var(--accent);
+    flex: 1;
+  }
+
+  .btn-primary:hover { background: var(--accent-h); }
+
+  .btn-ghost {
+    background: transparent;
+    color: var(--text-dim);
+    border-color: var(--border-dark);
+  }
+
+  .btn-ghost:hover {
+    color: var(--text);
+    border-color: var(--text-mid);
+  }
+
+  /* CONSENT */
+  .consent-wrap {
+    display: flex;
+    gap: 0.75rem;
+    padding: 0.85rem 1rem;
+    background: var(--check-bg);
+    border-radius: var(--radius-sm);
+    margin-bottom: 0.75rem;
+    align-items: flex-start;
+    border: 1.5px solid transparent;
+    transition: border-color 0.2s;
+  }
+
+  .consent-wrap input[type="checkbox"] {
+    flex-shrink: 0;
+    width: 15px;
+    height: 15px;
+    margin-top: 2px;
+    accent-color: var(--accent);
+    cursor: pointer;
+  }
+
+  .consent-wrap label {
+    font-size: 0.79rem;
+    color: var(--text-mid);
+    line-height: 1.55;
+    cursor: pointer;
+  }
+
+  .consent-wrap label a {
+    color: var(--accent);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+
+  /* RESULT */
+  .result-verdict {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    padding: 1.4rem;
+    border-radius: var(--radius-sm);
+    margin-bottom: 1.5rem;
+  }
+
+  .result-verdict.in-scope  { background: var(--green-bg); border: 1.5px solid #b0d6be; }
+  .result-verdict.possibly  { background: var(--amber-bg); border: 1.5px solid #ddc97c; }
+  .result-verdict.exempt    { background: var(--check-bg); border: 1.5px solid var(--border-dark); }
+  .result-verdict.check-law { background: var(--amber-bg); border: 1.5px solid #ddc97c; }
+
+  .verdict-icon {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    font-size: 1.15rem;
+    font-weight: 700;
+  }
+
+  .in-scope .verdict-icon  { background: var(--green); color: #fff; }
+  .possibly .verdict-icon  { background: var(--amber); color: #fff; }
+  .exempt .verdict-icon    { background: var(--border-dark); color: #fff; }
+  .check-law .verdict-icon { background: var(--amber); color: #fff; }
+
+  .verdict-text h2 {
+    font-size: 1.0rem;
+    font-weight: 700;
+    line-height: 1.25;
+    margin-bottom: 0.25rem;
+  }
+
+  .in-scope .verdict-text h2  { color: var(--green); }
+  .possibly .verdict-text h2  { color: var(--amber); }
+  .exempt .verdict-text h2    { color: var(--text-mid); }
+  .check-law .verdict-text h2 { color: var(--amber); }
+
+  .verdict-text p {
+    font-size: 0.82rem;
+    color: var(--text-dim);
+    line-height: 1.45;
+  }
+
+  /* RESULT BODY */
+  .result-section { margin-bottom: 1.25rem; }
+
+  .result-section h3 {
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    margin-bottom: 0.6rem;
+  }
+
+  .result-section p {
+    font-size: 0.88rem;
+    color: var(--text-mid);
+    line-height: 1.65;
+  }
+
+  .result-section ul {
+    list-style: none;
+    padding: 0;
+  }
+
+  .result-section ul li {
+    position: relative;
+    padding-left: 1.2rem;
+    font-size: 0.87rem;
+    color: var(--text-mid);
+    line-height: 1.6;
+    margin-bottom: 0.4rem;
+  }
+
+  .result-section ul li::before {
+    content: '›';
+    position: absolute;
+    left: 0;
+    color: var(--accent-l);
+    font-weight: 700;
+  }
+
+  .divider {
+    height: 1px;
+    background: var(--border);
+    margin: 1.25rem 0;
+  }
+
+  /* COUNTRY STATUS BADGE */
+  .country-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    font-size: 0.7rem;
+    font-family: var(--mono);
+    padding: 0.18rem 0.55rem;
+    border-radius: 99px;
+    margin-bottom: 0.5rem;
+  }
+
+  .country-status.law   { background: var(--green-bg); color: var(--green); border: 1px solid #b0d6be; }
+  .country-status.draft { background: var(--amber-bg); color: var(--amber); border: 1px solid #ddc97c; }
+  .country-status.delay { background: var(--red-bg); color: var(--red); border: 1px solid #f0c4be; }
+
+  /* CTA BLOCK */
+  .cta-block {
+    background: var(--accent);
+    border-radius: var(--radius-sm);
+    padding: 1.5rem;
+    color: #fff;
+    margin-top: 1.5rem;
+  }
+
+  .cta-block h3 {
+    font-size: 0.98rem;
+    font-weight: 700;
+    margin-bottom: 0.4rem;
+    letter-spacing: -0.01em;
+  }
+
+  .cta-block p {
+    font-size: 0.82rem;
+    opacity: 0.8;
+    line-height: 1.55;
+    margin-bottom: 1rem;
+  }
+
+  .cta-price {
+    font-family: var(--mono);
+    font-size: 1.05rem;
+    font-weight: 500;
+    margin-bottom: 1rem;
+    display: block;
+  }
+
+  .btn-cta {
+    display: inline-block;
+    background: #fff;
+    color: var(--accent);
+    font-family: var(--font);
+    font-size: 0.87rem;
+    font-weight: 700;
+    padding: 0.65rem 1.4rem;
+    border-radius: var(--radius-sm);
+    border: none;
+    cursor: pointer;
+    text-decoration: none;
+    transition: opacity 0.15s;
+    letter-spacing: 0.01em;
+  }
+
+  .btn-cta:hover { opacity: 0.88; }
+
+  /* DISCLAIMER */
+  .disclaimer {
+    margin-top: 1.5rem;
+    padding: 0.85rem 1rem;
+    background: var(--check-bg);
+    border: 1px solid var(--border-dark);
+    border-radius: var(--radius-sm);
+    font-size: 0.74rem;
+    color: var(--text-dim);
+    line-height: 1.6;
+  }
+
+  .disclaimer strong { color: var(--text-mid); }
+
+  /* EMAIL STATUS */
+  .email-sent {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.85rem 1rem;
+    background: var(--green-bg);
+    border: 1px solid #b0d6be;
+    border-radius: var(--radius-sm);
+    margin-top: 1rem;
+  }
+
+  .email-sent .tick {
+    width: 28px;
+    height: 28px;
+    background: var(--green);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-size: 0.85rem;
+    flex-shrink: 0;
+  }
+
+  .email-sent p {
+    font-size: 0.82rem;
+    color: var(--text-mid);
+    line-height: 1.45;
+  }
+
+  /* REASSESS */
+  .reassess-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    background: transparent;
+    border: none;
+    color: var(--text-dim);
+    font-family: var(--font);
+    font-size: 0.82rem;
+    cursor: pointer;
+    padding: 0;
+    margin-top: 1.25rem;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+
+  .reassess-btn:hover { color: var(--text); }
+
+  /* RESPONSIVE */
+  @media (max-width: 520px) {
+    .shell { padding: 2rem 1rem 4rem; }
+    .card { padding: 1.5rem 1.25rem; }
+    .radio-group { grid-template-columns: 1fr; }
+    .btn-row { flex-direction: column; }
+    .btn-ghost { text-align: center; }
+  }
+</style>
+</head>
+<body>
+<div class="shell">
+
+  <div class="brand">
+    <div class="brand-mark">
+      <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.2"
+           stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+      </svg>
+    </div>
+    <span class="brand-name">NIS2 Applicability Check</span>
+  </div>
+
+  <div class="progress-wrap" id="progressWrap">
+    <div class="progress-meta">
+      <span class="progress-label" id="progressLabel">Step 1 of 5</span>
+      <span class="progress-count" id="progressCount">0%</span>
+    </div>
+    <div class="progress-track">
+      <div class="progress-fill" id="progressFill" style="width:0%"></div>
+    </div>
+  </div>
+
+  <div id="stepsContainer"></div>
+
+</div>
+<script>
+// ============================================================================
+// NIS2 APPLICABILITY CHECKER — v1.0
+//
+// SECURITY:
+//   All user input is escaped via escapeHtml() before any DOM insertion.
+//   No eval(), no innerHTML with raw user strings.
+//   Email validated client-side (format check only).
+//   No localStorage/sessionStorage.
+//
+// MAINTENANCE NOTE:
+//   COUNTRIES[] transposition status will go stale. Review quarterly.
+//   Reference: https://eur-lex.europa.eu/legal-content/EN/NIM/?uri=CELEX:32022L2555
+// ============================================================================
+
+// --- SECURITY UTILITY ---
+function escapeHtml(s) {
+  const d = document.createElement('div');
+  d.textContent = String(s == null ? '' : s);
+  return d.innerHTML;
+}
+
+// --- COUNTRY DATA ---
+// status: "law" = transposed & in force | "draft" = advanced bill | "delay" = not yet transposed
+// Knowledge date: mid-2025. Verify at national competent authorities before using in production.
+const COUNTRIES = [
+  { code:"AT", name:"Austria",         status:"law",   notes:"Transposed via NISG 2024." },
+  { code:"BE", name:"Belgium",         status:"law",   notes:"Transposed via NIS2-wet 2024." },
+  { code:"BG", name:"Bulgaria",        status:"law",   notes:"Transposed via ZAKINSS 2024." },
+  { code:"HR", name:"Croatia",         status:"law",   notes:"Transposed 2024." },
+  { code:"CY", name:"Cyprus",          status:"law",   notes:"Transposed 2024." },
+  { code:"CZ", name:"Czech Republic",  status:"law",   notes:"Transposed via ZOKB amendment 2024." },
+  { code:"DK", name:"Denmark",         status:"law",   notes:"Transposed via SIK-loven 2024." },
+  { code:"EE", name:"Estonia",         status:"law",   notes:"Transposed 2024." },
+  { code:"FI", name:"Finland",         status:"law",   notes:"Transposed via Kyberturvallisuuslaki 2024." },
+  { code:"FR", name:"France",          status:"draft", notes:"Bill advanced; Loi de transposition pending final vote as of mid-2025." },
+  { code:"DE", name:"Germany",         status:"draft", notes:"NIS2UmsuCG passed Bundestag; pending Bundesrat confirmation and publication as of mid-2025." },
+  { code:"GR", name:"Greece",          status:"law",   notes:"Transposed 2024." },
+  { code:"HU", name:"Hungary",         status:"law",   notes:"Transposed 2024." },
+  { code:"IE", name:"Ireland",         status:"law",   notes:"Transposed via S.I. No. 322/2024." },
+  { code:"IT", name:"Italy",           status:"law",   notes:"Transposed via D.Lgs. 138/2024." },
+  { code:"LV", name:"Latvia",          status:"law",   notes:"Transposed 2024." },
+  { code:"LT", name:"Lithuania",       status:"law",   notes:"Transposed 2024." },
+  { code:"LU", name:"Luxembourg",      status:"law",   notes:"Transposed 2024." },
+  { code:"MT", name:"Malta",           status:"law",   notes:"Transposed 2024." },
+  { code:"NL", name:"Netherlands",     status:"delay", notes:"Cyberbeveiligingswet under parliamentary review as of mid-2025. Not yet in force. NIS1 remains applicable. Verify current status urgently — this may have changed." },
+  { code:"PL", name:"Poland",          status:"draft", notes:"KSC amendment bill in progress as of mid-2025." },
+  { code:"PT", name:"Portugal",        status:"law",   notes:"Transposed via amendment to Lei 46/2018 in 2024." },
+  { code:"RO", name:"Romania",         status:"law",   notes:"Transposed 2024." },
+  { code:"SK", name:"Slovakia",        status:"law",   notes:"Transposed 2024." },
+  { code:"SI", name:"Slovenia",        status:"law",   notes:"Transposed 2024." },
+  { code:"ES", name:"Spain",           status:"draft", notes:"Royal Decree-law advanced; full legislative transposition pending as of mid-2025." },
+  { code:"SE", name:"Sweden",          status:"law",   notes:"Transposed via NIS2-lagen 2024." },
+];
+
+// --- SECTOR DATA ---
+// NIS2 Annex I = Essential Entity | Annex II = Important Entity
+// override:true = Art. 2(2) may apply — potentially in scope regardless of size
+// Requires human review when override is flagged.
+const SECTORS = [
+  // Annex I — Essential
+  { id:"energy",       name:"Energy (electricity, oil, gas, hydrogen, district heating/cooling)", annex:"I",  cls:"essential", override:false },
+  { id:"transport",    name:"Transport (air, rail, water, road)",                                 annex:"I",  cls:"essential", override:false },
+  { id:"banking",      name:"Banking / credit institutions",                                      annex:"I",  cls:"essential", override:true  },
+  { id:"finmkt",       name:"Financial market infrastructure (CCPs, trading venues)",             annex:"I",  cls:"essential", override:true  },
+  { id:"health",       name:"Healthcare (hospitals, labs, R&D, pharma, medical devices)",        annex:"I",  cls:"essential", override:false },
+  { id:"water",        name:"Drinking water supply and distribution",                            annex:"I",  cls:"essential", override:true  },
+  { id:"wastewater",   name:"Wastewater collection, treatment or discharge",                     annex:"I",  cls:"essential", override:false },
+  { id:"digital",      name:"Digital infrastructure (IXPs, DNS, TLD, cloud, CDN, data centres, trust services, telecom)", annex:"I", cls:"essential", override:true },
+  { id:"ict_mgmt",     name:"ICT service management — B2B (managed services, managed security)", annex:"I",  cls:"essential", override:false },
+  { id:"pubadmin",     name:"Public administration (central / regional government)",             annex:"I",  cls:"essential", override:true  },
+  { id:"space",        name:"Space (ground-based infrastructure operators)",                     annex:"I",  cls:"essential", override:false },
+  // Annex II — Important
+  { id:"postal",       name:"Postal and courier services",                                       annex:"II", cls:"important", override:false },
+  { id:"waste",        name:"Waste management",                                                  annex:"II", cls:"important", override:false },
+  { id:"chemicals",    name:"Chemical production, manufacture or distribution",                  annex:"II", cls:"important", override:false },
+  { id:"food",         name:"Food production, processing or distribution",                       annex:"II", cls:"important", override:false },
+  { id:"manufacturing",name:"Manufacturing (medical devices, electronics, machinery, vehicles)", annex:"II", cls:"important", override:false },
+  { id:"digital_prov", name:"Digital providers (online marketplaces, search engines, social networks)", annex:"II", cls:"important", override:false },
+  { id:"research",     name:"Research organisations",                                            annex:"II", cls:"important", override:false },
+  // Out of scope
+  { id:"other",        name:"Other / not listed above",                                          annex:null, cls:null,        override:false },
+];
+
+// --- LOGIC ENGINE ---
+// NIS2 Art. 2(1): applies to medium entities (≥50 employees AND ≥€10M turnover)
+//                 and large entities (≥250 employees OR ≥€50M turnover) in listed sectors
+// NIS2 Art. 2(2): critical entities may be in scope regardless of size
+function evaluate(a) {
+  const country = COUNTRIES.find(c => c.code === a.country);
+  const sector  = SECTORS.find(s => s.id === a.sector);
+
+  const emp250   = a.employees === "250plus";
+  const emp50up  = a.employees === "50plus" || emp250;
+  const empUnsure = a.employees === "unsure";
+  const rev50    = a.revenue === "50mplus";
+  const rev10up  = a.revenue === "10mplus" || rev50;
+  const revUnsure = a.revenue === "unsure";
+
+  const isLarge   = emp250 || rev50;
+  const isMedium  = !isLarge && emp50up && rev10up;
+  const isUnsure  = !isLarge && !isMedium && (empUnsure || revUnsure);
+
+  if (!sector || sector.annex === null) {
+    return { state:"exempt", headline:"Sector not listed — likely not in scope",
+      subline:"NIS2 applies only to organisations in Annex I or Annex II sectors. Your sector does not appear to be covered.", country, sector, isLarge, isMedium };
+  }
+
+  if (country.status === "delay") {
+    return { state:"check-law", headline:"National law not yet in force — check urgently",
+      subline:`${country.name} had not fully transposed NIS2 as of mid-2025. The Directive is not directly enforceable without national legislation. Verify the current status immediately.`,
+      country, sector, isLarge, isMedium };
+  }
+
+  if (country.status === "draft") {
+    if (isLarge || sector.override) {
+      return { state:"possibly", headline:"Likely in scope — law imminent",
+        subline:`${country.name}'s NIS2 transposition bill is advanced but not yet in force as of mid-2025. If enacted (likely), your organisation would be in scope.`,
+        country, sector, isLarge, isMedium };
+    }
+    return { state:"check-law", headline:"Monitor — law not yet in force",
+      subline:`${country.name} is transposing NIS2 but the law is not yet enacted. Your size profile may keep you below thresholds — reassess once the law is published.`,
+      country, sector, isLarge, isMedium };
+  }
+
+  // Law in force
+  if (sector.override && !isLarge && !isMedium) {
+    return { state:"possibly", headline:"Possible scope regardless of size",
+      subline:"Your sector may trigger the Art. 2(2) 'critical entity' exception, which can bring organisations in scope regardless of size. This requires legal review.",
+      country, sector, isLarge, isMedium };
+  }
+
+  if (isUnsure) {
+    return { state:"possibly", headline:"Possibly in scope — size unclear",
+      subline:"Your sector is covered but we could not determine if you meet size thresholds. Clarify your employee count and turnover to confirm.",
+      country, sector, isLarge, isMedium };
+  }
+
+  if (isLarge || isMedium) {
+    const sizeLabel = isLarge ? "large entity (≥250 employees or ≥€50M turnover)" : "medium entity (≥50 employees and ≥€10M turnover)";
+    return { state:"in-scope", headline:"Yes — you are likely in scope",
+      subline:`As a ${sizeLabel} in a NIS2 Annex ${sector.annex} sector, NIS2 applies in ${country.name}.`,
+      country, sector, isLarge, isMedium };
+  }
+
+  return { state:"exempt", headline:"Likely exempt — below size thresholds",
+    subline:"NIS2 generally exempts micro and small entities (under 50 employees and under €10M turnover). Verify whether the Art. 2(2) critical entity exception applies to your specific context.",
+    country, sector, isLarge, isMedium };
+}
+
+// --- EMAIL STUB ---
+// CRITICAL: Replace this with a real backend call before deploying.
+// Required before deployment:
+//   1. Wire to SendGrid / Postmark / AWS SES / Mailchimp transactional
+//   2. Privacy notice must be live and linked from consent checkbox
+//   3. Store consent evidence (timestamp, email, checkbox value)
+//   4. Ensure unsubscribe / right-to-erasure process exists (GDPR Art. 17)
+//   5. The NIS2 readiness guide PDF must exist at the URL in the CTA
+async function sendEmail(email, result) {
+  console.warn("[STUB] sendEmail — not implemented. Wire to backend before deploying.", email, result.state);
+  return new Promise(r => setTimeout(r, 700)); // simulated latency
+}
+
+// --- WIZARD STATE ---
+const state = { step:0, answers:{}, result:null };
+const TOTAL_STEPS = 5;
+
+const STEPS = [
+  { id:"country",   eyebrow:"Step 1 of 5 — Location",  type:"select",
+    title:"Where is your company headquartered?",
+    desc:"NIS2 applies per the law of the EU member state where you are established. If you operate across multiple countries, select your primary HQ.",
+    optionsFrom:"countries", placeholder:"Select a country…", err:"Please select a country." },
+  { id:"sector",    eyebrow:"Step 2 of 5 — Sector",    type:"select",
+    title:"What sector does your organisation primarily operate in?",
+    desc:"NIS2 applies only to entities in Annex I (essential) and Annex II (important) sectors. Select the closest match to your primary business.",
+    optionsFrom:"sectors", placeholder:"Select a sector…", err:"Please select a sector." },
+  { id:"employees", eyebrow:"Step 3 of 5 — Size",      type:"radio",
+    title:"How many employees does your company have?",
+    desc:"Use full-time equivalents across the whole group (Art. 2 thresholds apply at group level). Micro: under 10. Small: 10–49. Medium: 50–249. Large: 250+.",
+    options:[{v:"under50",label:"Under 50"},{v:"50plus",label:"50 – 249"},{v:"250plus",label:"250 or more"},{v:"unsure",label:"Not sure"}],
+    err:"Please select your employee count." },
+  { id:"revenue",   eyebrow:"Step 4 of 5 — Revenue",   type:"radio",
+    title:"What is your annual net turnover?",
+    desc:"Use net turnover (total sales before deductions). The balance sheet test may also apply — use turnover as the primary indicator. EU SME definition applies.",
+    options:[{v:"under10m",label:"Under €10M"},{v:"10mplus",label:"€10M – €49M"},{v:"50mplus",label:"€50M or more"},{v:"unsure",label:"Not sure"}],
+    err:"Please select your annual turnover." },
+  { id:"email",     eyebrow:"Step 5 of 5 — Your result", type:"email",
+    title:"Where should we send your assessment?",
+    desc:"Enter your work email to receive a summary of your result and a complimentary NIS2 readiness guide.",
+    err:"Please enter a valid email address." },
+];
+
+// --- PROGRESS ---
+function updateProgress() {
+  const pct = Math.round((state.step / TOTAL_STEPS) * 100);
+  document.getElementById("progressFill").style.width = pct + "%";
+  document.getElementById("progressCount").textContent = pct + "%";
+  const labels = ["Step 1 of 5","Step 2 of 5","Step 3 of 5","Step 4 of 5","Step 5 of 5","Complete"];
+  document.getElementById("progressLabel").textContent = labels[Math.min(state.step, 5)];
+}
+
+// --- RENDER STEP ---
+function renderStep(idx) {
+  const s = STEPS[idx];
+  const container = document.getElementById("stepsContainer");
+
+  let h = `<div class="card">
+    <div class="step-eyebrow">${escapeHtml(s.eyebrow)}</div>
+    <h1 class="step-title">${escapeHtml(s.title)}</h1>
+    <p class="step-desc">${escapeHtml(s.desc)}</p>`;
+
+  if (s.type === "select") {
+    const opts = s.optionsFrom === "countries" ? COUNTRIES : SECTORS;
+    h += `<div class="field" id="fWrap">
+      <label for="sInput">Select one</label>
+      <select id="sInput">
+        <option value="">${escapeHtml(s.placeholder)}</option>`;
+    if (s.optionsFrom === "countries") {
+      opts.forEach(c => {
+        const sel = state.answers[s.id] === c.code ? " selected" : "";
+        h += `<option value="${escapeHtml(c.code)}"${sel}>${escapeHtml(c.name)}</option>`;
+      });
+    } else {
+      h += `<optgroup label="Annex I — Essential Entity Sectors">`;
+      opts.filter(o => o.annex === "I").forEach(o => {
+        const sel = state.answers[s.id] === o.id ? " selected" : "";
+        h += `<option value="${escapeHtml(o.id)}"${sel}>${escapeHtml(o.name)}</option>`;
+      });
+      h += `</optgroup><optgroup label="Annex II — Important Entity Sectors">`;
+      opts.filter(o => o.annex === "II").forEach(o => {
+        const sel = state.answers[s.id] === o.id ? " selected" : "";
+        h += `<option value="${escapeHtml(o.id)}"${sel}>${escapeHtml(o.name)}</option>`;
+      });
+      h += `</optgroup><optgroup label="Other">`;
+      opts.filter(o => o.annex === null).forEach(o => {
+        const sel = state.answers[s.id] === o.id ? " selected" : "";
+        h += `<option value="${escapeHtml(o.id)}"${sel}>${escapeHtml(o.name)}</option>`;
+      });
+      h += `</optgroup>`;
+    }
+    h += `</select>
+      <div class="field-error" id="fErr">${escapeHtml(s.err)}</div>
+    </div>`;
+
+  } else if (s.type === "radio") {
+    h += `<div class="radio-group" id="radioGroup">`;
+    s.options.forEach(o => {
+      const chk = state.answers[s.id] === o.v ? " checked" : "";
+      h += `<label class="radio-card">
+        <input type="radio" name="sRadio" value="${escapeHtml(o.v)}"${chk}>
+        <span class="radio-card-label">${escapeHtml(o.label)}</span>
+      </label>`;
+    });
+    h += `</div>
+    <div class="field-error" id="fErr" style="margin-top:-1rem;margin-bottom:0.5rem;">${escapeHtml(s.err)}</div>`;
+
+  } else if (s.type === "email") {
+    h += `<div class="field" id="fWrap">
+      <label for="sInput">Work email address</label>
+      <input type="email" id="sInput" placeholder="you@company.com"
+             value="${escapeHtml(state.answers.email || '')}"
+             autocomplete="email" spellcheck="false">
+      <div class="field-error" id="fErr">${escapeHtml(s.err)}</div>
+    </div>
+    <div class="consent-wrap" id="consentWrap">
+      <input type="checkbox" id="consentChk" ${state.answers.consent ? "checked" : ""}>
+      <label for="consentChk">I agree to receive my NIS2 assessment result and the readiness guide by email.
+        I have read the <a href="#" onclick="return false;">Privacy Notice</a> and consent to my email
+        address being used for this purpose. I can unsubscribe at any time.</label>
+    </div>`;
+  }
+
+  // Buttons
+  h += `<div class="btn-row">`;
+  if (idx > 0) h += `<button class="btn btn-ghost" id="btnBack">← Back</button>`;
+  h += `<button class="btn btn-primary" id="btnNext">${idx === STEPS.length - 1 ? "Get My Result →" : "Continue →"}</button>`;
+  h += `</div></div>`;
+
+  container.innerHTML = h;
+  updateProgress();
+
+  // Wire events
+  document.getElementById("btnNext").addEventListener("click", handleNext);
+  const backBtn = document.getElementById("btnBack");
+  if (backBtn) backBtn.addEventListener("click", handleBack);
+
+  // Auto-advance radios
+  if (s.type === "radio") {
+    document.querySelectorAll('input[name="sRadio"]').forEach(r => {
+      r.addEventListener("change", () => setTimeout(handleNext, 260));
+    });
+  }
+
+  // Enter key
+  const inp = document.getElementById("sInput");
+  if (inp) inp.addEventListener("keydown", e => { if (e.key === "Enter") handleNext(); });
+}
+
+// --- HANDLE NEXT ---
+function handleNext() {
+  const s = STEPS[state.step];
+
+  if (s.type === "select") {
+    const val = document.getElementById("sInput").value;
+    if (!val) { document.getElementById("fWrap").classList.add("error"); return; }
+    document.getElementById("fWrap").classList.remove("error");
+    state.answers[s.id] = val;
+
+  } else if (s.type === "radio") {
+    const checked = document.querySelector('input[name="sRadio"]:checked');
+    const errEl = document.getElementById("fErr");
+    if (!checked) { if (errEl) errEl.style.display = "block"; return; }
+    if (errEl) errEl.style.display = "none";
+    state.answers[s.id] = checked.value;
+
+  } else if (s.type === "email") {
+    const val = document.getElementById("sInput").value.trim();
+    const consent = document.getElementById("consentChk").checked;
+    const emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(val);
+
+    if (!emailOk) {
+      document.getElementById("fWrap").classList.add("error");
+      document.getElementById("fErr").textContent = "Please enter a valid email address.";
+      return;
+    }
+    document.getElementById("fWrap").classList.remove("error");
+
+    if (!consent) {
+      const cw = document.getElementById("consentWrap");
+      cw.style.border = "1.5px solid var(--red)";
+      cw.style.borderRadius = "var(--radius-sm)";
+      setTimeout(() => { cw.style.border = ""; }, 2000);
+      return;
+    }
+    state.answers.email = val;
+    state.answers.consent = true;
+  }
+
+  state.step++;
+  if (state.step === STEPS.length) {
+    state.result = evaluate(state.answers);
+    renderResult();
+  } else {
+    renderStep(state.step);
+  }
+}
+
+// --- HANDLE BACK ---
+function handleBack() {
+  if (state.step > 0) { state.step--; renderStep(state.step); }
+}
+
+// --- RENDER RESULT ---
+function renderResult() {
+  const r = state.result;
+  updateProgress();
+  document.getElementById("progressLabel").textContent = "Assessment complete";
+  document.getElementById("progressFill").style.width = "100%";
+  document.getElementById("progressCount").textContent = "100%";
+
+  const SC = { "in-scope":"in-scope", "possibly":"possibly", "exempt":"exempt", "check-law":"check-law" };
+  const ICONS = { "in-scope":"⚠", "possibly":"?", "exempt":"✓", "check-law":"!" };
+
+  const country = r.country;
+  const sector  = r.sector;
+
+  const statusBadge = country ? ({
+    law:   `<span class="country-status law">● Law in force</span>`,
+    draft: `<span class="country-status draft">◑ Transposition in progress</span>`,
+    delay: `<span class="country-status delay">○ Not yet transposed</span>`
+  })[country.status] : "";
+
+  const reasons = [];
+  if (sector && sector.annex) {
+    reasons.push(`Sector: "${escapeHtml(sector.name)}" is listed in NIS2 Annex ${escapeHtml(sector.annex)} — ${escapeHtml(sector.cls)} entity sector.`);
+  } else if (sector) {
+    reasons.push("Your sector does not appear in NIS2 Annex I or Annex II.");
+  }
+  if (r.isLarge) {
+    reasons.push("Size: meets large entity threshold (≥250 employees or ≥€50M turnover).");
+  } else if (r.isMedium) {
+    reasons.push("Size: meets medium entity threshold (≥50 employees and ≥€10M turnover).");
+  } else if (!r.isLarge && !r.isMedium && state.answers.employees !== "unsure" && state.answers.revenue !== "unsure") {
+    reasons.push("Size: below medium entity thresholds (under 50 employees or under €10M turnover).");
+  }
+  if (sector && sector.override) {
+    reasons.push("Critical sector flag: Art. 2(2) 'critical entity' exception may apply — requires legal confirmation.");
+  }
+  if (country) {
+    reasons.push(`${escapeHtml(country.name)} transposition: ${escapeHtml(country.notes)}`);
+  }
+
+  const NEXT_STEPS = {
+    "in-scope": [
+      "Register with your national competent authority (NCA) — most countries require self-registration.",
+      "Conduct a formal NIS2 gap assessment against all Article 21(2) requirements.",
+      "Establish or update your Information Security Policy hierarchy.",
+      "Implement Article 23 incident reporting (24h early warning / 72h notification / 1-month final report).",
+      "Confirm management body training and governance obligations are met (Article 20).",
+    ],
+    "possibly": [
+      "Obtain a legal opinion on whether the Art. 2(2) critical entity exception applies to your case.",
+      "Monitor your national competent authority for sector-specific guidance and registration requirements.",
+      "Begin a gap assessment proactively — compliance timelines can be tight once confirmed.",
+      "Verify that the transposition law has come into force and review its scope provisions.",
+    ],
+    "exempt": [
+      "Document your assessment rationale in case of supervisory enquiry.",
+      "Monitor: NIS2 scope may expand via delegated acts or stricter national transposition.",
+      "NIS2-aligned security practices are good governance even if you're not in scope.",
+      "Reassess if your company grows above 50 employees or €10M turnover.",
+    ],
+    "check-law": [
+      "Check your national competent authority's website for the latest transposition timeline.",
+      "Monitor the ENISA NIS transposition tracker at enisa.europa.eu.",
+      "Prepare proactively — the Directive's substance is clear even where law is pending.",
+      "Seek local legal advice on timing obligations as soon as the law is enacted.",
+    ]
+  };
+
+  let h = `<div class="card">
+    <div class="result-verdict ${escapeHtml(SC[r.state])}">
+      <div class="verdict-icon">${ICONS[r.state]}</div>
+      <div class="verdict-text">
+        <h2>${escapeHtml(r.headline)}</h2>
+        <p>${escapeHtml(r.subline)}</p>
+      </div>
+    </div>`;
+
+  if (country) {
+    h += `<div class="result-section">
+      <h3>Country — ${escapeHtml(country.name)}</h3>
+      ${statusBadge}
+      <p style="margin-top:0.45rem;">${escapeHtml(country.notes)}</p>
+    </div><div class="divider"></div>`;
+  }
+
+  if (reasons.length) {
+    h += `<div class="result-section">
+      <h3>Why this result</h3>
+      <ul>${reasons.map(x => `<li>${x}</li>`).join("")}</ul>
+    </div><div class="divider"></div>`;
+  }
+
+  const ns = NEXT_STEPS[r.state] || [];
+  if (ns.length) {
+    h += `<div class="result-section">
+      <h3>Recommended next steps</h3>
+      <ul>${ns.map(x => `<li>${escapeHtml(x)}</li>`).join("")}</ul>
+    </div>`;
+  }
+
+  // CTA — shown for in-scope and possibly
+  if (r.state === "in-scope" || r.state === "possibly") {
+    h += `<div class="cta-block">
+      <h3>Get your full NIS2 Readiness Assessment</h3>
+      <p>A structured gap analysis against all 10 Article 21(2) requirements — with a prioritised remediation roadmap and policy framework outline tailored to your sector and entity classification.</p>
+      <span class="cta-price">€1,500 — fixed fee · delivered in 5 business days</span>
+      <!-- TODO before deploying: replace href with real booking/contact page URL -->
+      <a class="btn-cta" href="#REPLACE_WITH_BOOKING_URL">Book your assessment →</a>
+    </div>`;
+  }
+
+  h += `<div id="emailStatus"></div>`;
+
+  h += `<div class="disclaimer">
+    <strong>Important:</strong> This tool is a preliminary self-screening aid only.
+    It is <strong>not legal advice</strong>. NIS2 has been transposed differently across EU member states;
+    national laws may extend scope, add sector-specific rules, or alter thresholds.
+    Transposition status data is from mid-2025 and may be out of date.
+    Always consult a qualified legal or compliance professional before acting on this result.
+  </div>
+  <button class="reassess-btn" id="btnReassess">↩ Start a new assessment</button>
+  </div>`;
+
+  document.getElementById("stepsContainer").innerHTML = h;
+
+  // Email stub
+  sendEmail(state.answers.email, r).then(() => {
+    const el = document.getElementById("emailStatus");
+    if (el) {
+      el.innerHTML = `<div class="email-sent">
+        <div class="tick">✓</div>
+        <p>A summary has been sent to <strong>${escapeHtml(state.answers.email)}</strong>. Check your inbox (and spam folder).</p>
+      </div>`;
+    }
+  }).catch(() => { /* stub failure — silent in production this should surface */ });
+
+  document.getElementById("btnReassess").addEventListener("click", () => {
+    state.step = 0; state.answers = {}; state.result = null;
+    renderStep(0);
+  });
+
+  document.getElementById("stepsContainer").scrollIntoView({ behavior:"smooth", block:"start" });
+}
+
+// --- INIT ---
+renderStep(0);
+</script>
+</body>
+</html>
