@@ -625,7 +625,7 @@
 </div>
 <script>
 // ============================================================================
-// NIS2 APPLICABILITY CHECKER — v1.1
+// NIS2 APPLICABILITY CHECKER — v1.2
 //
 // CHANGES FROM v1.0:
 //   - FIX: Privacy Notice link now works correctly.
@@ -772,10 +772,62 @@ function evaluate(a) {
     country, sector, isLarge, isMedium };
 }
 
-// --- EMAIL STUB ---
+// --- FORMSPREE INTEGRATION ---
+// Endpoint: https://formspree.io/f/mlgpjnjz
+// Sends the full assessment — email, all answers, and the result — as a JSON POST.
+// Field names are chosen to be human-readable in the Formspree dashboard and email.
 async function sendEmail(email, result) {
-  console.warn("[STUB] sendEmail — not implemented. Wire to backend before deploying.", email, result.state);
-  return new Promise(r => setTimeout(r, 700));
+  const country = COUNTRIES.find(c => c.code === state.answers.country);
+  const sector  = SECTORS.find(s => s.id === state.answers.sector);
+
+  const payload = {
+    // Formspree uses "email" as the reply-to address automatically
+    email: email,
+
+    // Assessment inputs — readable labels for the inbox
+    "Country": country ? country.name : state.answers.country,
+    "Sector": sector ? sector.name : state.answers.sector,
+    "Employees": {
+      "under50":  "Under 50",
+      "50plus":   "50 – 249",
+      "250plus":  "250 or more",
+      "unsure":   "Not sure"
+    }[state.answers.employees] || state.answers.employees,
+    "Annual turnover": {
+      "under10m": "Under €10M",
+      "10mplus":  "€10M – €49M",
+      "50mplus":  "€50M or more",
+      "unsure":   "Not sure"
+    }[state.answers.revenue] || state.answers.revenue,
+
+    // Result
+    "NIS2 verdict": result.headline,
+    "Result state": result.state,
+    "Explanation": result.subline,
+    "Country transposition status": country ? country.status : "unknown",
+    "Country notes": country ? country.notes : "",
+
+    // Context for follow-up
+    "Consent given": state.answers.consent ? "Yes" : "No",
+    "Submitted at": new Date().toISOString(),
+  };
+
+  const response = await fetch("https://formspree.io/f/mlgpjnjz", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "Accept": "application/json"
+    },
+    body: JSON.stringify(payload)
+  });
+
+  if (!response.ok) {
+    const data = await response.json().catch(() => ({}));
+    const msg = data.errors ? data.errors.map(e => e.message).join(", ") : "Submission failed";
+    throw new Error(msg);
+  }
+
+  return response.json();
 }
 
 // --- WIZARD STATE ---
@@ -1108,10 +1160,18 @@ function renderResult() {
     if (el) {
       el.innerHTML = `<div class="email-sent">
         <div class="tick">✓</div>
-        <p>A summary has been prepared for <strong>${escapeHtml(state.answers.email)}</strong>. Check your inbox once the email backend is connected.</p>
+        <p>A copy of your assessment has been sent to <strong>${escapeHtml(state.answers.email)}</strong>. Check your inbox (and spam folder if needed).</p>
       </div>`;
     }
-  }).catch(() => {});
+  }).catch(() => {
+    const el = document.getElementById("emailStatus");
+    if (el) {
+      el.innerHTML = `<div class="email-sent" style="background:var(--amber-bg);border-color:#ddc97c;">
+        <div class="tick" style="background:var(--amber);">!</div>
+        <p>Your result is shown above. We could not send the email copy — please screenshot this page or <a href="mailto:info@bare-consult.com" style="color:var(--accent)">contact us directly</a>.</p>
+      </div>`;
+    }
+  });
 
   document.getElementById("btnReassess").addEventListener("click", () => {
     state.step = 0; state.answers = {}; state.result = null;
