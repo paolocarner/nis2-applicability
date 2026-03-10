@@ -1137,7 +1137,7 @@ function renderResult() {
       <h3>Get your full NIS2 Readiness Assessment</h3>
       <p>A structured gap analysis against all 10 Article 21(2) requirements — with a prioritised remediation roadmap and policy framework outline tailored to your sector and entity classification.</p>
       <span class="cta-price">€1,500 — fixed fee · delivered in 5 business days</span>
-      <a class="btn-cta" href="https://calendly.com/paolo-carner-bare-consult/30min" target="_blank" rel="noopener noreferrer">Book your assessment →</a>
+      <button class="btn-cta" id="ctaBtn">Book your assessment →</button>
     </div>`;
   }
 
@@ -1154,6 +1154,15 @@ function renderResult() {
   </div>`;
 
   document.getElementById("stepsContainer").innerHTML = h;
+
+  // Wire CTA button after DOM injection — same pattern as privacy link fix.
+  // Inline href/onclick in injected innerHTML is unreliable across browsers.
+  const ctaBtn = document.getElementById("ctaBtn");
+  if (ctaBtn) {
+    ctaBtn.addEventListener("click", function() {
+      window.open("https://calendly.com/paolo-carner-bare-consult/30min", "_blank", "noopener,noreferrer");
+    });
+  }
 
   sendEmail(state.answers.email, r).then(() => {
     const el = document.getElementById("emailStatus");
