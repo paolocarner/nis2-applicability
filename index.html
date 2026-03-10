@@ -3,660 +3,1122 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Does NIS2 Apply to You? — Self-Assessment</title>
+<title>NIS2 Compliance Readiness Assessment — BARE Consult</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Serif:ital,wght@0,400;0,600;1,400&family=IBM+Plex+Sans:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@400;500&display=swap');
-
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-  :root {
-    --bg:          #f5f2ed;
-    --bg-card:     #fffdf9;
-    --border:      #ddd8ce;
-    --border-dark: #c4bdb0;
-    --text:        #1a1714;
-    --text-mid:    #4a4540;
-    --text-dim:    #7a746c;
-    --accent:      #1a3a2a;
-    --accent-l:    #2d5c42;
-    --accent-h:    #234d38;
-    --red:         #c0392b;
-    --amber:       #9a7200;
-    --green:       #1a5c30;
-    --green-bg:    #eaf3ed;
-    --amber-bg:    #fdf6e3;
-    --red-bg:      #fdf0ee;
-    --check-bg:    #f0ede8;
-    --font:        'Syne', sans-serif;
-    --mono:        'DM Mono', monospace;
-    --radius:      12px;
-    --radius-sm:   6px;
-    --shadow:      0 2px 16px rgba(26,23,20,0.08);
-  }
-
-  html { font-size: 15px; scroll-behavior: smooth; }
-
-  body {
-    font-family: var(--font);
-    background: var(--bg);
-    color: var(--text);
-    min-height: 100vh;
-    -webkit-font-smoothing: antialiased;
-  }
-
-  body::before {
-    content: '';
-    position: fixed;
-    inset: 0;
-    background-image:
-      radial-gradient(circle at 15% 15%, rgba(26,58,42,0.05) 0%, transparent 50%),
-      radial-gradient(circle at 85% 80%, rgba(26,58,42,0.04) 0%, transparent 40%);
-    pointer-events: none;
-    z-index: 0;
-  }
-
-  .shell {
-    position: relative;
-    z-index: 1;
-    max-width: 620px;
-    margin: 0 auto;
-    padding: 3rem 1.5rem 5rem;
-  }
-
-  /* BRAND */
-  .brand {
-    display: flex;
-    align-items: center;
-    gap: 0.65rem;
-    margin-bottom: 3rem;
-  }
-
-  .brand-mark {
-    width: 34px;
-    height: 34px;
-    background: var(--accent);
-    border-radius: 7px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-  }
-
-  .brand-mark svg { width: 18px; height: 18px; }
-
-  .brand-name {
-    font-size: 0.8rem;
-    font-weight: 700;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: var(--text-mid);
-  }
-
-  /* PROGRESS */
-  .progress-wrap { margin-bottom: 2.25rem; }
-
-  .progress-meta {
-    display: flex;
-    justify-content: space-between;
-    align-items: baseline;
-    margin-bottom: 0.55rem;
-  }
-
-  .progress-label {
-    font-size: 0.7rem;
-    font-weight: 700;
-    letter-spacing: 0.09em;
-    text-transform: uppercase;
-    color: var(--text-dim);
-  }
-
-  .progress-count {
-    font-family: var(--mono);
-    font-size: 0.7rem;
-    color: var(--text-dim);
-  }
-
-  .progress-track {
-    height: 3px;
-    background: var(--border);
-    border-radius: 99px;
-    overflow: hidden;
-  }
-
-  .progress-fill {
-    height: 100%;
-    background: var(--accent);
-    border-radius: 99px;
-    transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-  }
-
-  /* CARD */
-  .card {
-    background: var(--bg-card);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 2.25rem 2rem;
-    box-shadow: var(--shadow);
-    animation: slideIn 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  }
-
-  @keyframes slideIn {
-    from { opacity: 0; transform: translateY(10px); }
-    to   { opacity: 1; transform: translateY(0); }
-  }
-
-  .step-eyebrow {
-    font-family: var(--mono);
-    font-size: 0.68rem;
-    color: var(--accent-l);
-    letter-spacing: 0.07em;
-    text-transform: uppercase;
-    margin-bottom: 0.5rem;
-  }
-
-  .step-title {
-    font-size: 1.3rem;
-    font-weight: 700;
-    line-height: 1.3;
-    margin-bottom: 0.5rem;
-    letter-spacing: -0.02em;
-  }
-
-  .step-desc {
-    font-size: 0.87rem;
-    color: var(--text-dim);
-    line-height: 1.6;
-    margin-bottom: 1.75rem;
-  }
-
-  /* FIELD */
-  .field label {
-    display: block;
-    font-size: 0.7rem;
-    font-weight: 700;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: var(--text-mid);
-    margin-bottom: 0.45rem;
-  }
-
-  .field select,
-  .field input[type="email"] {
-    width: 100%;
-    padding: 0.75rem 1rem;
-    font-family: var(--font);
-    font-size: 0.95rem;
-    color: var(--text);
-    background: var(--bg);
-    border: 1.5px solid var(--border-dark);
-    border-radius: var(--radius-sm);
-    outline: none;
-    appearance: none;
-    -webkit-appearance: none;
-    transition: border-color 0.2s, box-shadow 0.2s;
-  }
-
-  .field select {
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%237a746c' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
-    background-repeat: no-repeat;
-    background-position: right 0.85rem center;
-    padding-right: 2.5rem;
-    cursor: pointer;
-  }
-
-  .field select:focus,
-  .field input[type="email"]:focus {
-    border-color: var(--accent);
-    box-shadow: 0 0 0 3px rgba(26,58,42,0.1);
-  }
-
-  .field select option,
-  .field select optgroup { background: var(--bg-card); }
-
-  .field-error {
-    font-size: 0.75rem;
-    color: var(--red);
-    margin-top: 0.35rem;
-    display: none;
-  }
-
-  .field.error select,
-  .field.error input { border-color: var(--red) !important; }
-
-  .field.error .field-error { display: block; }
-
-  /* RADIO CARDS */
-  .radio-group {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 0.6rem;
-    margin-bottom: 1.75rem;
-  }
-
-  .radio-card { position: relative; cursor: pointer; }
-
-  .radio-card input[type="radio"] {
-    position: absolute;
-    opacity: 0;
-    width: 0;
-    height: 0;
-  }
-
-  .radio-card-label {
-    display: block;
-    padding: 0.85rem 0.75rem;
-    border: 1.5px solid var(--border-dark);
-    border-radius: var(--radius-sm);
-    background: var(--bg);
-    font-size: 0.88rem;
-    font-weight: 600;
-    color: var(--text-mid);
-    text-align: center;
-    transition: all 0.15s;
-    cursor: pointer;
-    user-select: none;
-    line-height: 1.3;
-  }
-
-  .radio-card input[type="radio"]:checked + .radio-card-label {
-    border-color: var(--accent);
-    background: var(--accent);
-    color: #fff;
-  }
-
-  .radio-card-label:hover {
-    border-color: var(--accent);
-    color: var(--accent);
-  }
-
-  .radio-card input[type="radio"]:checked + .radio-card-label:hover {
-    color: #fff;
-  }
-
-  /* BUTTONS */
-  .btn-row {
-    display: flex;
-    gap: 0.6rem;
-    margin-top: 1.5rem;
-  }
-
-  .btn {
-    font-family: var(--font);
-    font-size: 0.9rem;
-    font-weight: 700;
-    padding: 0.75rem 1.5rem;
-    border-radius: var(--radius-sm);
-    border: 1.5px solid transparent;
-    cursor: pointer;
-    transition: all 0.15s;
-    letter-spacing: 0.01em;
-  }
-
-  .btn-primary {
-    background: var(--accent);
-    color: #fff;
-    border-color: var(--accent);
-    flex: 1;
-  }
-
-  .btn-primary:hover { background: var(--accent-h); }
-
-  .btn-ghost {
-    background: transparent;
-    color: var(--text-dim);
-    border-color: var(--border-dark);
-  }
-
-  .btn-ghost:hover {
-    color: var(--text);
-    border-color: var(--text-mid);
-  }
-
-  /* CONSENT */
-  .consent-wrap {
-    display: flex;
-    gap: 0.75rem;
-    padding: 0.85rem 1rem;
-    background: var(--check-bg);
-    border-radius: var(--radius-sm);
-    margin-bottom: 0.75rem;
-    align-items: flex-start;
-    border: 1.5px solid transparent;
-    transition: border-color 0.2s;
-  }
-
-  .consent-wrap.consent-error {
-    border-color: var(--red);
-  }
-
-  .consent-wrap input[type="checkbox"] {
-    flex-shrink: 0;
-    width: 15px;
-    height: 15px;
-    margin-top: 2px;
-    accent-color: var(--accent);
-    cursor: pointer;
-  }
-
-  .consent-wrap label {
-    font-size: 0.79rem;
-    color: var(--text-mid);
-    line-height: 1.55;
-    cursor: pointer;
-  }
-
-  /* FIX: privacy link styled and clickable */
-  .consent-wrap label a.privacy-link {
-    color: var(--accent);
-    text-decoration: underline;
-    text-underline-offset: 2px;
-    cursor: pointer;
-    /* prevent label click behaviour from interfering */
-    pointer-events: all;
-    position: relative;
-    z-index: 10;
-    display: inline;
-  }
-
-  .consent-wrap label a.privacy-link:hover {
-    color: var(--accent-l);
-  }
-
-  /* RESULT */
-  .result-verdict {
-    display: flex;
-    align-items: flex-start;
-    gap: 1rem;
-    padding: 1.4rem;
-    border-radius: var(--radius-sm);
-    margin-bottom: 1.5rem;
-  }
-
-  .result-verdict.in-scope  { background: var(--green-bg); border: 1.5px solid #b0d6be; }
-  .result-verdict.possibly  { background: var(--amber-bg); border: 1.5px solid #ddc97c; }
-  .result-verdict.exempt    { background: var(--check-bg); border: 1.5px solid var(--border-dark); }
-  .result-verdict.check-law { background: var(--amber-bg); border: 1.5px solid #ddc97c; }
-
-  .verdict-icon {
-    width: 42px;
-    height: 42px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-    font-size: 1.15rem;
-    font-weight: 700;
-  }
-
-  .in-scope .verdict-icon  { background: var(--green); color: #fff; }
-  .possibly .verdict-icon  { background: var(--amber); color: #fff; }
-  .exempt .verdict-icon    { background: var(--border-dark); color: #fff; }
-  .check-law .verdict-icon { background: var(--amber); color: #fff; }
-
-  .verdict-text h2 {
-    font-size: 1.0rem;
-    font-weight: 700;
-    line-height: 1.25;
-    margin-bottom: 0.25rem;
-  }
-
-  .in-scope .verdict-text h2  { color: var(--green); }
-  .possibly .verdict-text h2  { color: var(--amber); }
-  .exempt .verdict-text h2    { color: var(--text-mid); }
-  .check-law .verdict-text h2 { color: var(--amber); }
-
-  .verdict-text p {
-    font-size: 0.82rem;
-    color: var(--text-dim);
-    line-height: 1.45;
-  }
-
-  /* RESULT BODY */
-  .result-section { margin-bottom: 1.25rem; }
-
-  .result-section h3 {
-    font-size: 0.68rem;
-    font-weight: 700;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: var(--text-dim);
-    margin-bottom: 0.6rem;
-  }
-
-  .result-section p {
-    font-size: 0.88rem;
-    color: var(--text-mid);
-    line-height: 1.65;
-  }
-
-  .result-section ul {
-    list-style: none;
-    padding: 0;
-  }
-
-  .result-section ul li {
-    position: relative;
-    padding-left: 1.2rem;
-    font-size: 0.87rem;
-    color: var(--text-mid);
-    line-height: 1.6;
-    margin-bottom: 0.4rem;
-  }
-
-  .result-section ul li::before {
-    content: '›';
-    position: absolute;
-    left: 0;
-    color: var(--accent-l);
-    font-weight: 700;
-  }
-
-  .divider {
-    height: 1px;
-    background: var(--border);
-    margin: 1.25rem 0;
-  }
-
-  /* COUNTRY STATUS BADGE */
-  .country-status {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.3rem;
-    font-size: 0.7rem;
-    font-family: var(--mono);
-    padding: 0.18rem 0.55rem;
-    border-radius: 99px;
-    margin-bottom: 0.5rem;
-  }
-
-  .country-status.law   { background: var(--green-bg); color: var(--green); border: 1px solid #b0d6be; }
-  .country-status.draft { background: var(--amber-bg); color: var(--amber); border: 1px solid #ddc97c; }
-  .country-status.delay { background: var(--red-bg); color: var(--red); border: 1px solid #f0c4be; }
-
-  /* CTA BLOCK */
-  .cta-block {
-    background: var(--accent);
-    border-radius: var(--radius-sm);
-    padding: 1.5rem;
-    color: #fff;
-    margin-top: 1.5rem;
-  }
-
-  .cta-block h3 {
-    font-size: 0.98rem;
-    font-weight: 700;
-    margin-bottom: 0.4rem;
-    letter-spacing: -0.01em;
-  }
-
-  .cta-block p {
-    font-size: 0.82rem;
-    opacity: 0.8;
-    line-height: 1.55;
-    margin-bottom: 1rem;
-  }
-
-  .cta-price {
-    font-family: var(--mono);
-    font-size: 1.05rem;
-    font-weight: 500;
-    margin-bottom: 1rem;
-    display: block;
-  }
-
-  .btn-cta {
-    display: inline-block;
-    background: #fff;
-    color: var(--accent);
-    font-family: var(--font);
-    font-size: 0.87rem;
-    font-weight: 700;
-    padding: 0.65rem 1.4rem;
-    border-radius: var(--radius-sm);
-    border: none;
-    cursor: pointer;
-    text-decoration: none;
-    transition: opacity 0.15s;
-    letter-spacing: 0.01em;
-  }
-
-  .btn-cta:hover { opacity: 0.88; }
-
-  /* DISCLAIMER */
-  .disclaimer {
-    margin-top: 1.5rem;
-    padding: 0.85rem 1rem;
-    background: var(--check-bg);
-    border: 1px solid var(--border-dark);
-    border-radius: var(--radius-sm);
-    font-size: 0.74rem;
-    color: var(--text-dim);
-    line-height: 1.6;
-  }
-
-  .disclaimer strong { color: var(--text-mid); }
-
-  /* EMAIL STATUS */
-  .email-sent {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    padding: 0.85rem 1rem;
-    background: var(--green-bg);
-    border: 1px solid #b0d6be;
-    border-radius: var(--radius-sm);
-    margin-top: 1rem;
-  }
-
-  .email-sent .tick {
-    width: 28px;
-    height: 28px;
-    background: var(--green);
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: #fff;
-    font-size: 0.85rem;
-    flex-shrink: 0;
-  }
-
-  .email-sent p {
-    font-size: 0.82rem;
-    color: var(--text-mid);
-    line-height: 1.45;
-  }
-
-  /* REASSESS */
-  .reassess-btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.4rem;
-    background: transparent;
-    border: none;
-    color: var(--text-dim);
-    font-family: var(--font);
-    font-size: 0.82rem;
-    cursor: pointer;
-    padding: 0;
-    margin-top: 1.25rem;
-    text-decoration: underline;
-    text-underline-offset: 2px;
-  }
-
-  .reassess-btn:hover { color: var(--text); }
-
-  /* RESPONSIVE */
-  @media (max-width: 520px) {
-    .shell { padding: 2rem 1rem 4rem; }
-    .card { padding: 1.5rem 1.25rem; }
-    .radio-group { grid-template-columns: 1fr; }
-    .btn-row { flex-direction: column; }
-    .btn-ghost { text-align: center; }
-  }
+/*============================================================
+  NIS2 READINESS ASSESSMENT v2
+  Aesthetic: Security Operations Dashboard — dark slate,
+  electric blue, sharp data typography. Authoritative but
+  approachable. IBM Plex family throughout.
+============================================================*/
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg:         #0a0e1a;
+  --bg-2:       #0f1526;
+  --bg-card:    #131a2e;
+  --bg-card-2:  #1a2240;
+  --border:     #1e2d4a;
+  --border-l:   #2a3d5e;
+  --blue:       #3b82f6;
+  --blue-l:     #60a5fa;
+  --blue-glow:  rgba(59,130,246,0.12);
+  --blue-glow2: rgba(59,130,246,0.06);
+  --teal:       #14b8a6;
+  --text:       #e2e8f4;
+  --text-mid:   #94a3b8;
+  --text-dim:   #4a5568;
+  --red:        #f87171;
+  --red-bg:     rgba(248,113,113,0.08);
+  --amber:      #fbbf24;
+  --amber-bg:   rgba(251,191,36,0.08);
+  --green:      #34d399;
+  --green-bg:   rgba(52,211,153,0.08);
+  --score-crit: #f87171;
+  --score-dev:  #fbbf24;
+  --score-prog: #60a5fa;
+  --score-adv:  #34d399;
+  --serif:      'IBM Plex Serif', Georgia, serif;
+  --sans:       'IBM Plex Sans', sans-serif;
+  --mono:       'IBM Plex Mono', monospace;
+  --r:          10px;
+  --r-sm:       6px;
+  --r-xs:       4px;
+}
+
+html { font-size: 15px; scroll-behavior: smooth; }
+
+body {
+  font-family: var(--sans);
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+/* Ambient background glow */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 60% 40% at 10% 20%, rgba(59,130,246,0.06) 0%, transparent 60%),
+    radial-gradient(ellipse 40% 30% at 90% 80%, rgba(20,184,166,0.04) 0%, transparent 50%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.shell {
+  position: relative;
+  z-index: 1;
+  max-width: 700px;
+  margin: 0 auto;
+  padding: 2.5rem 1.5rem 5rem;
+}
+
+/* ---- HEADER ---- */
+.site-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 2.5rem;
+  padding-bottom: 1.25rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.brand-icon {
+  width: 32px; height: 32px;
+  background: var(--blue);
+  border-radius: 7px;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+
+.brand-icon svg { width: 17px; height: 17px; }
+
+.brand-name {
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-mid);
+}
+
+.version-tag {
+  font-family: var(--mono);
+  font-size: 0.65rem;
+  color: var(--blue);
+  background: var(--blue-glow);
+  border: 1px solid rgba(59,130,246,0.2);
+  padding: 0.2rem 0.55rem;
+  border-radius: 999px;
+  letter-spacing: 0.05em;
+}
+
+/* ---- PHASE INDICATOR ---- */
+.phase-bar {
+  display: flex;
+  gap: 0.4rem;
+  margin-bottom: 1.75rem;
+}
+
+.phase-item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.phase-track {
+  height: 3px;
+  border-radius: 99px;
+  background: var(--border);
+  overflow: hidden;
+  position: relative;
+}
+
+.phase-fill {
+  position: absolute;
+  inset: 0;
+  background: var(--blue);
+  border-radius: 99px;
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.4s cubic-bezier(0.4,0,0.2,1);
+}
+
+.phase-fill.active { transform: scaleX(1); }
+.phase-fill.partial { transform: scaleX(0.5); }
+
+.phase-label {
+  font-family: var(--mono);
+  font-size: 0.6rem;
+  color: var(--text-dim);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.phase-label.active { color: var(--blue); }
+
+/* ---- PROGRESS ---- */
+.progress-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 0.5rem;
+}
+
+.progress-title {
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--text-mid);
+}
+
+.progress-frac {
+  font-family: var(--mono);
+  font-size: 0.68rem;
+  color: var(--text-dim);
+}
+
+.progress-track-main {
+  height: 2px;
+  background: var(--border);
+  border-radius: 99px;
+  overflow: hidden;
+  margin-bottom: 1.75rem;
+}
+
+.progress-fill-main {
+  height: 100%;
+  background: linear-gradient(90deg, var(--blue), var(--teal));
+  border-radius: 99px;
+  transition: width 0.4s cubic-bezier(0.4,0,0.2,1);
+}
+
+/* ---- CARD ---- */
+.card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  padding: 2rem 2rem 1.75rem;
+  position: relative;
+  overflow: hidden;
+  animation: slideUp 0.3s cubic-bezier(0.4,0,0.2,1) both;
+}
+
+.card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, var(--blue) 0%, transparent 60%);
+  opacity: 0.5;
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.q-meta {
+  font-family: var(--mono);
+  font-size: 0.65rem;
+  color: var(--blue);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-bottom: 0.55rem;
+}
+
+.q-title {
+  font-family: var(--serif);
+  font-size: 1.25rem;
+  font-weight: 600;
+  line-height: 1.35;
+  color: var(--text);
+  margin-bottom: 0.4rem;
+  letter-spacing: -0.01em;
+}
+
+.q-desc {
+  font-size: 0.84rem;
+  color: var(--text-mid);
+  line-height: 1.6;
+  margin-bottom: 1.5rem;
+}
+
+.art-ref {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-family: var(--mono);
+  font-size: 0.63rem;
+  color: var(--teal);
+  background: rgba(20,184,166,0.08);
+  border: 1px solid rgba(20,184,166,0.15);
+  padding: 0.15rem 0.5rem;
+  border-radius: 99px;
+  margin-bottom: 1.25rem;
+  display: block;
+  width: fit-content;
+}
+
+/* ---- SELECT ---- */
+.styled-select-wrap { position: relative; margin-bottom: 1.5rem; }
+
+.styled-select {
+  width: 100%;
+  appearance: none;
+  background: var(--bg-2);
+  border: 1px solid var(--border-l);
+  border-radius: var(--r-sm);
+  padding: 0.8rem 2.5rem 0.8rem 1rem;
+  font-family: var(--sans);
+  font-size: 0.92rem;
+  color: var(--text);
+  cursor: pointer;
+  outline: none;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.styled-select:focus {
+  border-color: var(--blue);
+  box-shadow: 0 0 0 3px var(--blue-glow);
+}
+
+.styled-select option, .styled-select optgroup { background: var(--bg-card); }
+
+.styled-select-wrap::after {
+  content: '▾';
+  position: absolute;
+  right: 1rem; top: 50%;
+  transform: translateY(-50%);
+  color: var(--blue); font-size: 0.75rem;
+  pointer-events: none;
+}
+
+.field-err {
+  font-size: 0.74rem;
+  color: var(--red);
+  margin-top: -1rem;
+  margin-bottom: 0.75rem;
+  display: none;
+}
+
+.field-err.show { display: block; }
+
+/* ---- OPTION CARDS (radio) ---- */
+.opt-grid {
+  display: grid;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.opt-grid.two { grid-template-columns: 1fr 1fr; }
+.opt-grid.three { grid-template-columns: 1fr 1fr 1fr; }
+
+.opt-card {
+  position: relative;
+  cursor: pointer;
+}
+
+.opt-card input[type="radio"] {
+  position: absolute; opacity: 0; width: 0; height: 0;
+}
+
+.opt-label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  padding: 0.85rem 0.9rem;
+  border: 1px solid var(--border-l);
+  border-radius: var(--r-sm);
+  background: var(--bg-2);
+  font-size: 0.87rem;
+  font-weight: 500;
+  color: var(--text-mid);
+  cursor: pointer;
+  transition: all 0.15s;
+  line-height: 1.3;
+}
+
+.opt-label .opt-sub {
+  font-size: 0.72rem;
+  font-weight: 400;
+  color: var(--text-dim);
+  line-height: 1.4;
+}
+
+.opt-card input:checked + .opt-label {
+  border-color: var(--blue);
+  background: var(--blue-glow);
+  color: var(--text);
+}
+
+.opt-card input:checked + .opt-label .opt-sub { color: var(--text-mid); }
+
+.opt-label:hover {
+  border-color: var(--blue);
+  color: var(--text);
+}
+
+/* Score indicators on posture options */
+.opt-score {
+  display: inline-block;
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  margin-right: 0.35rem;
+  vertical-align: middle;
+}
+
+.score-0 { background: var(--red); }
+.score-5 { background: var(--amber); }
+.score-10 { background: var(--green); }
+
+/* ---- EMAIL / CONSENT ---- */
+.email-field {
+  margin-bottom: 1rem;
+}
+
+.field-label {
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-mid);
+  margin-bottom: 0.4rem;
+  display: block;
+}
+
+.text-input {
+  width: 100%;
+  background: var(--bg-2);
+  border: 1px solid var(--border-l);
+  border-radius: var(--r-sm);
+  padding: 0.8rem 1rem;
+  font-family: var(--sans);
+  font-size: 0.92rem;
+  color: var(--text);
+  outline: none;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.text-input:focus {
+  border-color: var(--blue);
+  box-shadow: 0 0 0 3px var(--blue-glow);
+}
+
+.text-input::placeholder { color: var(--text-dim); }
+.text-input.err { border-color: var(--red); }
+
+.consent-box {
+  display: flex;
+  gap: 0.65rem;
+  align-items: flex-start;
+  background: var(--bg-2);
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+  padding: 0.8rem 0.9rem;
+  margin-bottom: 1rem;
+  transition: border-color 0.2s;
+}
+
+.consent-box.err { border-color: var(--red); }
+
+.consent-box input[type="checkbox"] {
+  flex-shrink: 0;
+  width: 14px; height: 14px;
+  margin-top: 2px;
+  accent-color: var(--blue);
+  cursor: pointer;
+}
+
+.consent-box label {
+  font-size: 0.78rem;
+  color: var(--text-mid);
+  line-height: 1.55;
+  cursor: pointer;
+}
+
+.consent-box label a.privacy-link {
+  color: var(--blue);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  cursor: pointer;
+}
+
+/* ---- NAV BUTTONS ---- */
+.btn-row {
+  display: flex;
+  gap: 0.6rem;
+  align-items: center;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--border);
+  margin-top: 0.25rem;
+}
+
+.btn-next {
+  flex: 1;
+  background: var(--blue);
+  color: #fff;
+  border: none;
+  border-radius: var(--r-sm);
+  padding: 0.75rem 1.5rem;
+  font-family: var(--sans);
+  font-size: 0.88rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s;
+  letter-spacing: 0.02em;
+}
+
+.btn-next:hover {
+  background: var(--blue-l);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 16px rgba(59,130,246,0.3);
+}
+
+.btn-back {
+  background: transparent;
+  border: 1px solid var(--border-l);
+  border-radius: var(--r-sm);
+  padding: 0.75rem 1.1rem;
+  font-family: var(--sans);
+  font-size: 0.88rem;
+  color: var(--text-mid);
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.btn-back:hover { border-color: var(--text-mid); color: var(--text); }
+.btn-back:disabled { opacity: 0; pointer-events: none; }
+
+/* ---- PHASE TRANSITION ---- */
+.phase-bridge {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  padding: 2rem;
+  text-align: center;
+  animation: slideUp 0.35s ease both;
+}
+
+.phase-bridge .bridge-icon {
+  font-size: 2rem;
+  margin-bottom: 1rem;
+}
+
+.phase-bridge h2 {
+  font-family: var(--serif);
+  font-size: 1.3rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  color: var(--text);
+}
+
+.phase-bridge p {
+  font-size: 0.87rem;
+  color: var(--text-mid);
+  line-height: 1.6;
+  max-width: 460px;
+  margin: 0 auto 1.5rem;
+}
+
+.scope-result-mini {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  padding: 0.4rem 1rem;
+  border-radius: 999px;
+  margin-bottom: 1.25rem;
+}
+
+.scope-result-mini.in-scope  { background: var(--red-bg); color: var(--red); border: 1px solid rgba(248,113,113,0.2); }
+.scope-result-mini.possibly  { background: var(--amber-bg); color: var(--amber); border: 1px solid rgba(251,191,36,0.2); }
+.scope-result-mini.exempt    { background: var(--green-bg); color: var(--green); border: 1px solid rgba(52,211,153,0.2); }
+.scope-result-mini.check-law { background: var(--amber-bg); color: var(--amber); border: 1px solid rgba(251,191,36,0.2); }
+
+/* ---- RESULT PAGE ---- */
+.result-wrap { animation: slideUp 0.4s ease both; }
+
+/* Score gauge */
+.gauge-section {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  padding: 2rem;
+  margin-bottom: 1rem;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.gauge-section::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--blue), transparent);
+  opacity: 0.4;
+}
+
+.gauge-label {
+  font-family: var(--mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  margin-bottom: 1.25rem;
+}
+
+.gauge-wrap {
+  position: relative;
+  width: 180px;
+  height: 95px;
+  margin: 0 auto 1rem;
+}
+
+.gauge-svg { width: 100%; height: 100%; overflow: visible; }
+
+.gauge-track {
+  fill: none;
+  stroke: var(--border-l);
+  stroke-width: 10;
+  stroke-linecap: round;
+}
+
+.gauge-fill {
+  fill: none;
+  stroke-width: 10;
+  stroke-linecap: round;
+  stroke-dasharray: 283;
+  stroke-dashoffset: 283;
+  transition: stroke-dashoffset 1.2s cubic-bezier(0.4,0,0.2,1),
+              stroke 0.4s ease;
+}
+
+.gauge-number {
+  font-family: var(--serif);
+  font-size: 2.4rem;
+  font-weight: 600;
+  fill: var(--text);
+}
+
+.gauge-denom {
+  font-family: var(--mono);
+  font-size: 0.75rem;
+  fill: var(--text-dim);
+}
+
+.score-band {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  padding: 0.3rem 0.85rem;
+  border-radius: 999px;
+  margin-bottom: 0.5rem;
+}
+
+.band-critical { background: var(--red-bg);   color: var(--red);   border: 1px solid rgba(248,113,113,0.2); }
+.band-developing{ background: var(--amber-bg); color: var(--amber); border: 1px solid rgba(251,191,36,0.2); }
+.band-progressing{ background: var(--blue-glow); color: var(--blue-l); border: 1px solid rgba(59,130,246,0.2); }
+.band-advanced  { background: var(--green-bg); color: var(--green); border: 1px solid rgba(52,211,153,0.2); }
+
+.gauge-desc {
+  font-size: 0.82rem;
+  color: var(--text-mid);
+  max-width: 360px;
+  margin: 0 auto;
+  line-height: 1.55;
+}
+
+.self-report-note {
+  font-family: var(--mono);
+  font-size: 0.62rem;
+  color: var(--text-dim);
+  margin-top: 0.75rem;
+  letter-spacing: 0.03em;
+}
+
+/* Scope verdict row */
+.verdict-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.verdict-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  padding: 1.25rem 1.25rem 1rem;
+}
+
+.vc-label {
+  font-family: var(--mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  margin-bottom: 0.5rem;
+}
+
+.vc-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  padding: 0.28rem 0.7rem;
+  border-radius: 999px;
+  margin-bottom: 0.5rem;
+}
+
+.vc-badge.in-scope  { background: var(--red-bg);   color: var(--red);   border: 1px solid rgba(248,113,113,0.2); }
+.vc-badge.possibly  { background: var(--amber-bg);  color: var(--amber); border: 1px solid rgba(251,191,36,0.2); }
+.vc-badge.exempt    { background: var(--green-bg);  color: var(--green); border: 1px solid rgba(52,211,153,0.2); }
+.vc-badge.check-law { background: var(--amber-bg);  color: var(--amber); border: 1px solid rgba(251,191,36,0.2); }
+.vc-badge.law   { background: var(--green-bg);  color: var(--green); border: 1px solid rgba(52,211,153,0.2); }
+.vc-badge.draft { background: var(--amber-bg);  color: var(--amber); border: 1px solid rgba(251,191,36,0.2); }
+.vc-badge.delay { background: var(--red-bg);    color: var(--red);   border: 1px solid rgba(248,113,113,0.2); }
+
+.vc-sub {
+  font-size: 0.78rem;
+  color: var(--text-mid);
+  line-height: 1.45;
+}
+
+/* ---- GAP CHART ---- */
+.gap-section {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  padding: 1.75rem 1.75rem 1.5rem;
+  margin-bottom: 1rem;
+}
+
+.section-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 1.25rem;
+}
+
+.section-title {
+  font-family: var(--serif);
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.section-sub {
+  font-size: 0.72rem;
+  color: var(--text-dim);
+  font-family: var(--mono);
+}
+
+.gap-item {
+  margin-bottom: 1rem;
+}
+
+.gap-item:last-child { margin-bottom: 0; }
+
+.gap-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 0.3rem;
+}
+
+.gap-name {
+  font-size: 0.82rem;
+  color: var(--text-mid);
+  font-weight: 500;
+}
+
+.gap-score-val {
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  color: var(--text-dim);
+}
+
+.gap-bar-track {
+  height: 6px;
+  background: var(--border);
+  border-radius: 99px;
+  overflow: hidden;
+}
+
+.gap-bar-fill {
+  height: 100%;
+  border-radius: 99px;
+  width: 0%;
+  transition: width 0.8s cubic-bezier(0.4,0,0.2,1);
+}
+
+.gap-bar-fill.score-0  { background: var(--red); }
+.gap-bar-fill.score-5  { background: var(--amber); }
+.gap-bar-fill.score-10 { background: var(--green); }
+
+.gap-art {
+  font-family: var(--mono);
+  font-size: 0.6rem;
+  color: var(--text-dim);
+  margin-top: 0.2rem;
+}
+
+/* Legend */
+.gap-legend {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+  flex-wrap: wrap;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.72rem;
+  color: var(--text-mid);
+}
+
+.legend-dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+/* ---- RECOMMENDATIONS ---- */
+.rec-section {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  padding: 1.75rem 1.75rem 1.5rem;
+  margin-bottom: 1rem;
+}
+
+.rec-item {
+  display: flex;
+  gap: 1rem;
+  padding: 1rem 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.rec-item:last-child { border-bottom: none; padding-bottom: 0; }
+.rec-item:first-child { padding-top: 0; }
+
+.rec-priority {
+  flex-shrink: 0;
+  width: 32px; height: 32px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  font-weight: 500;
+}
+
+.rec-priority.p-high   { background: var(--red-bg);   color: var(--red);   border: 1px solid rgba(248,113,113,0.2); }
+.rec-priority.p-medium { background: var(--amber-bg);  color: var(--amber); border: 1px solid rgba(251,191,36,0.2); }
+.rec-priority.p-low    { background: var(--green-bg);  color: var(--green); border: 1px solid rgba(52,211,153,0.2); }
+
+.rec-body { flex: 1; }
+
+.rec-title {
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 0.25rem;
+  line-height: 1.35;
+}
+
+.rec-desc {
+  font-size: 0.8rem;
+  color: var(--text-mid);
+  line-height: 1.55;
+  margin-bottom: 0.35rem;
+}
+
+.rec-tag {
+  font-family: var(--mono);
+  font-size: 0.6rem;
+  color: var(--teal);
+  background: rgba(20,184,166,0.08);
+  border: 1px solid rgba(20,184,166,0.15);
+  padding: 0.1rem 0.45rem;
+  border-radius: 99px;
+}
+
+/* ---- CTA ---- */
+.cta-section {
+  background: linear-gradient(135deg, var(--bg-card-2) 0%, var(--bg-card) 100%);
+  border: 1px solid var(--border-l);
+  border-radius: var(--r);
+  padding: 1.75rem 2rem;
+  margin-bottom: 1rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.cta-section::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, var(--blue), var(--teal), transparent);
+  opacity: 0.6;
+}
+
+.cta-eyebrow {
+  font-family: var(--mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--blue);
+  margin-bottom: 0.5rem;
+}
+
+.cta-title {
+  font-family: var(--serif);
+  font-size: 1.15rem;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 0.4rem;
+  line-height: 1.3;
+}
+
+.cta-desc {
+  font-size: 0.84rem;
+  color: var(--text-mid);
+  line-height: 1.6;
+  margin-bottom: 1.25rem;
+}
+
+.cta-includes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 1.25rem;
+}
+
+.cta-tag {
+  font-size: 0.73rem;
+  color: var(--text-mid);
+  background: var(--bg-2);
+  border: 1px solid var(--border);
+  border-radius: 99px;
+  padding: 0.2rem 0.65rem;
+}
+
+.cta-tag::before { content: '✓ '; color: var(--teal); }
+
+.cta-bottom {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  flex-wrap: wrap;
+}
+
+.cta-price {
+  font-family: var(--serif);
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.cta-price span {
+  font-family: var(--sans);
+  font-size: 0.78rem;
+  font-weight: 400;
+  color: var(--text-dim);
+}
+
+.btn-cta {
+  background: var(--blue);
+  color: #fff;
+  border: none;
+  border-radius: var(--r-sm);
+  padding: 0.75rem 1.75rem;
+  font-family: var(--sans);
+  font-size: 0.88rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s;
+  letter-spacing: 0.02em;
+  text-decoration: none;
+  display: inline-block;
+}
+
+.btn-cta:hover {
+  background: var(--blue-l);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 20px rgba(59,130,246,0.35);
+}
+
+/* ---- EMAIL STATUS ---- */
+.email-status {
+  margin-top: 0.75rem;
+}
+
+.email-sent-bar {
+  display: flex;
+  gap: 0.65rem;
+  align-items: center;
+  background: var(--green-bg);
+  border: 1px solid rgba(52,211,153,0.15);
+  border-radius: var(--r-sm);
+  padding: 0.75rem 1rem;
+  font-size: 0.8rem;
+  color: var(--green);
+}
+
+.email-fail-bar {
+  display: flex;
+  gap: 0.65rem;
+  align-items: center;
+  background: var(--amber-bg);
+  border: 1px solid rgba(251,191,36,0.15);
+  border-radius: var(--r-sm);
+  padding: 0.75rem 1rem;
+  font-size: 0.8rem;
+  color: var(--amber);
+}
+
+/* ---- DISCLAIMER ---- */
+.disclaimer {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+  padding: 1rem 1.1rem;
+  font-size: 0.72rem;
+  color: var(--text-dim);
+  line-height: 1.6;
+  margin-bottom: 0.75rem;
+}
+
+.disclaimer strong { color: var(--text-mid); }
+
+.restart-btn {
+  background: transparent;
+  border: none;
+  color: var(--text-dim);
+  font-family: var(--sans);
+  font-size: 0.8rem;
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  padding: 0;
+  transition: color 0.15s;
+}
+
+.restart-btn:hover { color: var(--text-mid); }
+
+/* ---- RESPONSIVE ---- */
+@media (max-width: 520px) {
+  .shell { padding: 1.5rem 1rem 4rem; }
+  .card { padding: 1.5rem 1.25rem; }
+  .opt-grid.three { grid-template-columns: 1fr; }
+  .opt-grid.two { grid-template-columns: 1fr 1fr; }
+  .verdict-row { grid-template-columns: 1fr; }
+  .cta-bottom { flex-direction: column; align-items: flex-start; }
+}
 </style>
 </head>
 <body>
 <div class="shell">
 
-  <div class="brand">
-    <div class="brand-mark">
-      <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.2"
-           stroke-linecap="round" stroke-linejoin="round">
-        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-      </svg>
+  <!-- HEADER -->
+  <header class="site-header">
+    <div class="brand">
+      <div class="brand-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+        </svg>
+      </div>
+      <span class="brand-name">BARE Consult — NIS2</span>
     </div>
-    <span class="brand-name">NIS2 Applicability Check</span>
+    <span class="version-tag">v2.0</span>
+  </header>
+
+  <!-- PHASE BAR -->
+  <div class="phase-bar" id="phaseBar">
+    <div class="phase-item">
+      <div class="phase-track"><div class="phase-fill" id="pf1"></div></div>
+      <div class="phase-label" id="pl1">Phase 1 — Scope</div>
+    </div>
+    <div class="phase-item">
+      <div class="phase-track"><div class="phase-fill" id="pf2"></div></div>
+      <div class="phase-label" id="pl2">Phase 2 — Posture</div>
+    </div>
+    <div class="phase-item">
+      <div class="phase-track"><div class="phase-fill" id="pf3"></div></div>
+      <div class="phase-label" id="pl3">Phase 3 — Contact</div>
+    </div>
   </div>
 
-  <div class="progress-wrap" id="progressWrap">
-    <div class="progress-meta">
-      <span class="progress-label" id="progressLabel">Step 1 of 5</span>
-      <span class="progress-count" id="progressCount">0%</span>
+  <!-- PROGRESS -->
+  <div id="progressWrap">
+    <div class="progress-row">
+      <span class="progress-title" id="progressTitle">Step 1 of 15</span>
+      <span class="progress-frac" id="progressFrac">0%</span>
     </div>
-    <div class="progress-track">
-      <div class="progress-fill" id="progressFill" style="width:0%"></div>
+    <div class="progress-track-main">
+      <div class="progress-fill-main" id="progressFill" style="width:0%"></div>
     </div>
   </div>
 
-  <div id="stepsContainer"></div>
+  <!-- MAIN CONTENT -->
+  <div id="main"></div>
 
 </div>
 <script>
-// ============================================================================
-// NIS2 APPLICABILITY CHECKER — v1.2
-//
-// CHANGES FROM v1.0:
-//   - FIX: Privacy Notice link now works correctly.
-//     Root cause: inline onclick handlers in innerHTML-injected strings are
-//     stripped by browsers for security. Fix: link is rendered without onclick,
-//     then wired via addEventListener() after DOM insertion.
-//   - FIX: Consent error highlight now uses a CSS class (.consent-error)
-//     instead of inline style manipulation, which was unreliable on reset.
-//   - No logic changes; all evaluation and data unchanged.
-//
-// SECURITY:
-//   All user input is escaped via escapeHtml() before any DOM insertion.
-//   No eval(), no innerHTML with raw user strings.
-//   Email validated client-side (format check only).
-//   No localStorage/sessionStorage.
-//
-// MAINTENANCE NOTE:
-//   COUNTRIES[] transposition status will go stale. Review quarterly.
-//   Reference: https://eur-lex.europa.eu/legal-content/EN/NIM/?uri=CELEX:32022L2555
-// ============================================================================
+/*=============================================================
+  NIS2 READINESS ASSESSMENT v2
+  
+  ARCHITECTURE:
+    Phase 1 (Q1-5):  Scope determination — country, sector, size
+    Bridge:          Show scope verdict, introduce Phase 2
+    Phase 2 (Q6-15): Security posture — one question per Art. 21(2) measure
+    Phase 3 (Q16):   Email + consent
+    Result:          Score gauge + gap chart + recommendations + CTA
 
-// --- SECURITY UTILITY ---
+  SCORING:
+    Each posture question: Not started=0, Partial=5, Implemented=10
+    Total: 0-100. Bands: Critical(0-30), Developing(31-60),
+    Progressing(61-85), Advanced(86-100)
+
+  SECURITY:
+    - All user input escaped via escapeHtml() before DOM insertion
+    - No eval(), no innerHTML with raw user data
+    - Links/buttons wired via addEventListener after injection
+    - No localStorage/sessionStorage
+=============================================================*/
+
+// ---- SECURITY UTILITY ----
 function escapeHtml(s) {
   const d = document.createElement('div');
   d.textContent = String(s == null ? '' : s);
   return d.innerHTML;
 }
 
-// --- COUNTRY DATA ---
-// status: "law" = transposed & in force | "draft" = advanced bill | "delay" = not yet transposed
-// Knowledge date: mid-2025. Verify at national competent authorities before using in production.
+// ---- COUNTRY DATA ----
 const COUNTRIES = [
   { code:"AT", name:"Austria",         status:"law",   notes:"Transposed via NISG 2024." },
   { code:"BE", name:"Belgium",         status:"law",   notes:"Transposed via NIS2-wet 2024." },
@@ -667,8 +1129,8 @@ const COUNTRIES = [
   { code:"DK", name:"Denmark",         status:"law",   notes:"Transposed via SIK-loven 2024." },
   { code:"EE", name:"Estonia",         status:"law",   notes:"Transposed 2024." },
   { code:"FI", name:"Finland",         status:"law",   notes:"Transposed via Kyberturvallisuuslaki 2024." },
-  { code:"FR", name:"France",          status:"draft", notes:"Bill advanced; Loi de transposition pending final vote as of mid-2025." },
-  { code:"DE", name:"Germany",         status:"draft", notes:"NIS2UmsuCG passed Bundestag; pending Bundesrat confirmation and publication as of mid-2025." },
+  { code:"FR", name:"France",          status:"draft", notes:"Bill advanced; pending final vote as of mid-2025." },
+  { code:"DE", name:"Germany",         status:"draft", notes:"NIS2UmsuCG passed Bundestag; pending Bundesrat as of mid-2025." },
   { code:"GR", name:"Greece",          status:"law",   notes:"Transposed 2024." },
   { code:"HU", name:"Hungary",         status:"law",   notes:"Transposed 2024." },
   { code:"IE", name:"Ireland",         status:"law",   notes:"Transposed via S.I. No. 322/2024." },
@@ -677,27 +1139,27 @@ const COUNTRIES = [
   { code:"LT", name:"Lithuania",       status:"law",   notes:"Transposed 2024." },
   { code:"LU", name:"Luxembourg",      status:"law",   notes:"Transposed 2024." },
   { code:"MT", name:"Malta",           status:"law",   notes:"Transposed 2024." },
-  { code:"NL", name:"Netherlands",     status:"delay", notes:"Cyberbeveiligingswet under parliamentary review as of mid-2025. Not yet in force. NIS1 remains applicable. Verify current status urgently — this may have changed." },
+  { code:"NL", name:"Netherlands",     status:"delay", notes:"Cyberbeveiligingswet pending as of mid-2025. NIS1 remains applicable." },
   { code:"PL", name:"Poland",          status:"draft", notes:"KSC amendment bill in progress as of mid-2025." },
   { code:"PT", name:"Portugal",        status:"law",   notes:"Transposed via amendment to Lei 46/2018 in 2024." },
   { code:"RO", name:"Romania",         status:"law",   notes:"Transposed 2024." },
   { code:"SK", name:"Slovakia",        status:"law",   notes:"Transposed 2024." },
   { code:"SI", name:"Slovenia",        status:"law",   notes:"Transposed 2024." },
-  { code:"ES", name:"Spain",           status:"draft", notes:"Royal Decree-law advanced; full legislative transposition pending as of mid-2025." },
+  { code:"ES", name:"Spain",           status:"draft", notes:"Royal Decree-law advanced; full transposition pending as of mid-2025." },
   { code:"SE", name:"Sweden",          status:"law",   notes:"Transposed via NIS2-lagen 2024." },
 ];
 
-// --- SECTOR DATA ---
+// ---- SECTOR DATA ----
 const SECTORS = [
   { id:"energy",       name:"Energy (electricity, oil, gas, hydrogen, district heating/cooling)", annex:"I",  cls:"essential", override:false },
   { id:"transport",    name:"Transport (air, rail, water, road)",                                 annex:"I",  cls:"essential", override:false },
   { id:"banking",      name:"Banking / credit institutions",                                      annex:"I",  cls:"essential", override:true  },
-  { id:"finmkt",       name:"Financial market infrastructure (CCPs, trading venues)",             annex:"I",  cls:"essential", override:true  },
+  { id:"finmkt",       name:"Financial market infrastructure",                                    annex:"I",  cls:"essential", override:true  },
   { id:"health",       name:"Healthcare (hospitals, labs, R&D, pharma, medical devices)",        annex:"I",  cls:"essential", override:false },
   { id:"water",        name:"Drinking water supply and distribution",                            annex:"I",  cls:"essential", override:true  },
   { id:"wastewater",   name:"Wastewater collection, treatment or discharge",                     annex:"I",  cls:"essential", override:false },
-  { id:"digital",      name:"Digital infrastructure (IXPs, DNS, TLD, cloud, CDN, data centres, trust services, telecom)", annex:"I", cls:"essential", override:true },
-  { id:"ict_mgmt",     name:"ICT service management — B2B (managed services, managed security)", annex:"I",  cls:"essential", override:false },
+  { id:"digital",      name:"Digital infrastructure (IXPs, DNS, TLD, cloud, CDN, data centres, telecom)", annex:"I", cls:"essential", override:true },
+  { id:"ict_mgmt",     name:"ICT service management — B2B (managed/security services)",          annex:"I",  cls:"essential", override:false },
   { id:"pubadmin",     name:"Public administration (central / regional government)",             annex:"I",  cls:"essential", override:true  },
   { id:"space",        name:"Space (ground-based infrastructure operators)",                     annex:"I",  cls:"essential", override:false },
   { id:"postal",       name:"Postal and courier services",                                       annex:"II", cls:"important", override:false },
@@ -705,13 +1167,99 @@ const SECTORS = [
   { id:"chemicals",    name:"Chemical production, manufacture or distribution",                  annex:"II", cls:"important", override:false },
   { id:"food",         name:"Food production, processing or distribution",                       annex:"II", cls:"important", override:false },
   { id:"manufacturing",name:"Manufacturing (medical devices, electronics, machinery, vehicles)", annex:"II", cls:"important", override:false },
-  { id:"digital_prov", name:"Digital providers (online marketplaces, search engines, social networks)", annex:"II", cls:"important", override:false },
+  { id:"digital_prov", name:"Digital providers (marketplaces, search engines, social networks)",annex:"II", cls:"important", override:false },
   { id:"research",     name:"Research organisations",                                            annex:"II", cls:"important", override:false },
   { id:"other",        name:"Other / not listed above",                                          annex:null, cls:null,        override:false },
 ];
 
-// --- LOGIC ENGINE ---
-function evaluate(a) {
+// ---- POSTURE QUESTIONS (Phase 2) ----
+// Each maps to one NIS2 Art. 21(2) measure.
+// Answers: "none"=0, "partial"=5, "full"=10
+const POSTURE_QS = [
+  {
+    id: "risk",
+    art: "Art. 21(2)(a)",
+    title: "Risk management framework",
+    desc: "Do you have a documented cybersecurity risk assessment process that is reviewed regularly?",
+    rec_title: "Establish a formal risk management framework",
+    rec_desc: "Implement a documented, all-hazards risk assessment methodology reviewed at least annually and after major incidents. Define risk appetite, treatment plans, and assign ownership.",
+  },
+  {
+    id: "incident",
+    art: "Art. 21(2)(b) + Art. 23",
+    title: "Incident response & reporting",
+    desc: "Do you have a documented incident response plan with defined reporting timelines (24h early warning, 72h notification)?",
+    rec_title: "Develop an Incident Response Plan with NIS2 reporting timelines",
+    rec_desc: "Create IRP covering detection, classification, escalation, and mandatory NIS2 timelines: 24h early warning, 72h full notification, 1-month final report. Include annual tabletop exercises.",
+  },
+  {
+    id: "continuity",
+    art: "Art. 21(2)(c)",
+    title: "Business continuity & backup",
+    desc: "Do you have tested business continuity and disaster recovery plans, including a backup regime?",
+    rec_title: "Implement tested Business Continuity and DR plans",
+    rec_desc: "Document BCP with BIA, RTO/RPO targets, and 3-2-1 backup strategy. Test DR annually. Integrate ransomware-resistant offsite backups and crisis communication protocols.",
+  },
+  {
+    id: "supply",
+    art: "Art. 21(2)(d)",
+    title: "Supply chain security",
+    desc: "Do you assess and manage cybersecurity risks from your ICT suppliers and service providers?",
+    rec_title: "Build a supply chain security programme",
+    rec_desc: "Assess all ICT suppliers before contract and annually. Embed mandatory security clauses, right-to-audit provisions, and incident notification obligations in all supplier contracts.",
+  },
+  {
+    id: "systems",
+    art: "Art. 21(2)(e)",
+    title: "Network & systems security",
+    desc: "Do you apply systematic vulnerability management, patching, and network segmentation?",
+    rec_title: "Strengthen network and systems security controls",
+    rec_desc: "Implement vulnerability scanning, critical patch SLA (≤48h), network segmentation, and secure configuration baselines. Establish a change management process with security impact assessment.",
+  },
+  {
+    id: "effectiveness",
+    art: "Art. 21(2)(f)",
+    title: "Security effectiveness assessment",
+    desc: "Do you regularly test and measure the effectiveness of your security controls (audits, pen tests, KRIs)?",
+    rec_title: "Establish security effectiveness measurement",
+    rec_desc: "Conduct annual penetration testing, internal audits, and maintain key risk indicators. Document and remediate findings without undue delay per Art. 21(4).",
+  },
+  {
+    id: "training",
+    art: "Art. 21(2)(g) + Art. 20(2)",
+    title: "Training & cyber hygiene",
+    desc: "Do all staff receive cybersecurity awareness training, and has management received NIS2-specific training?",
+    rec_title: "Launch a structured training and awareness programme",
+    rec_desc: "Annual awareness training for all staff including phishing simulations. Role-specific training for IT and privileged users. Mandatory management body training on NIS2 obligations (Art. 20(2)).",
+  },
+  {
+    id: "crypto",
+    art: "Art. 21(2)(h)",
+    title: "Cryptography & encryption",
+    desc: "Do you apply encryption at rest and in transit, with a managed key lifecycle?",
+    rec_title: "Implement an encryption and key management policy",
+    rec_desc: "Enforce AES-256 at rest and TLS 1.2+ in transit. Encrypt all portable devices. Establish key management lifecycle (generation, rotation, revocation) reviewed against ENISA guidance annually.",
+  },
+  {
+    id: "access",
+    art: "Art. 21(2)(i)",
+    title: "Access control & HR security",
+    desc: "Do you enforce least-privilege access, MFA for critical systems, and a joiner/mover/leaver process?",
+    rec_title: "Implement a comprehensive access control programme",
+    rec_desc: "Enforce least privilege, MFA for all remote and administrative access. Implement PAM for privileged accounts. Establish JML process with timely provisioning/deprovisioning and regular access reviews.",
+  },
+  {
+    id: "governance",
+    art: "Art. 20 + Art. 21(2)(j)",
+    title: "Governance & secure communications",
+    desc: "Has your management body formally approved the security policy, and do you have secure out-of-band emergency communications?",
+    rec_title: "Establish board-level cybersecurity governance",
+    rec_desc: "Management body must formally approve the ISP, receive quarterly security reports, and complete NIS2 training. Establish encrypted emergency communication channels independent of primary IT systems.",
+  },
+];
+
+// ---- SCOPE EVALUATION ----
+function evaluateScope(a) {
   const country = COUNTRIES.find(c => c.code === a.country);
   const sector  = SECTORS.find(s => s.id === a.sector);
 
@@ -721,477 +1269,769 @@ function evaluate(a) {
   const rev50     = a.revenue === "50mplus";
   const rev10up   = a.revenue === "10mplus" || rev50;
   const revUnsure = a.revenue === "unsure";
-
-  const isLarge  = emp250 || rev50;
-  const isMedium = !isLarge && emp50up && rev10up;
-  const isUnsure = !isLarge && !isMedium && (empUnsure || revUnsure);
+  const isLarge   = emp250 || rev50;
+  const isMedium  = !isLarge && emp50up && rev10up;
+  const isUnsure  = !isLarge && !isMedium && (empUnsure || revUnsure);
 
   if (!sector || sector.annex === null) {
     return { state:"exempt", headline:"Sector not listed — likely not in scope",
-      subline:"NIS2 applies only to organisations in Annex I or Annex II sectors. Your sector does not appear to be covered.", country, sector, isLarge, isMedium };
+      subline:"NIS2 applies only to Annex I/II sectors.", country, sector, isLarge, isMedium };
   }
-
   if (country.status === "delay") {
-    return { state:"check-law", headline:"National law not yet in force — check urgently",
-      subline:`${country.name} had not fully transposed NIS2 as of mid-2025. The Directive is not directly enforceable without national legislation. Verify the current status immediately.`,
+    return { state:"check-law", headline:"National law not yet in force",
+      subline:`${country.name} had not fully transposed NIS2 as of mid-2025. Verify urgently.`,
       country, sector, isLarge, isMedium };
   }
-
   if (country.status === "draft") {
     if (isLarge || sector.override) {
       return { state:"possibly", headline:"Likely in scope — law imminent",
-        subline:`${country.name}'s NIS2 transposition bill is advanced but not yet in force as of mid-2025. If enacted (likely), your organisation would be in scope.`,
+        subline:`${country.name}'s transposition bill is advanced. If enacted, you would be in scope.`,
         country, sector, isLarge, isMedium };
     }
     return { state:"check-law", headline:"Monitor — law not yet in force",
-      subline:`${country.name} is transposing NIS2 but the law is not yet enacted. Your size profile may keep you below thresholds — reassess once the law is published.`,
+      subline:`${country.name} is transposing NIS2 but the law is not yet enacted.`,
       country, sector, isLarge, isMedium };
   }
-
   if (sector.override && !isLarge && !isMedium) {
     return { state:"possibly", headline:"Possible scope regardless of size",
-      subline:"Your sector may trigger the Art. 2(2) 'critical entity' exception, which can bring organisations in scope regardless of size. This requires legal review.",
+      subline:"Art. 2(2) critical entity exception may apply. Requires legal review.",
       country, sector, isLarge, isMedium };
   }
-
   if (isUnsure) {
     return { state:"possibly", headline:"Possibly in scope — size unclear",
-      subline:"Your sector is covered but we could not determine if you meet size thresholds. Clarify your employee count and turnover to confirm.",
+      subline:"Your sector is covered but size thresholds could not be determined.",
       country, sector, isLarge, isMedium };
   }
-
   if (isLarge || isMedium) {
-    const sizeLabel = isLarge ? "large entity (≥250 employees or ≥€50M turnover)" : "medium entity (≥50 employees and ≥€10M turnover)";
+    const sl = isLarge ? "large entity (≥250 employees or ≥€50M)" : "medium entity (≥50 employees and ≥€10M)";
     return { state:"in-scope", headline:"Yes — you are likely in scope",
-      subline:`As a ${sizeLabel} in a NIS2 Annex ${sector.annex} sector, NIS2 applies in ${country.name}.`,
+      subline:`As a ${sl} in NIS2 Annex ${sector.annex}, NIS2 applies in ${country.name}.`,
       country, sector, isLarge, isMedium };
   }
-
   return { state:"exempt", headline:"Likely exempt — below size thresholds",
-    subline:"NIS2 generally exempts micro and small entities (under 50 employees and under €10M turnover). Verify whether the Art. 2(2) critical entity exception applies to your specific context.",
+    subline:"NIS2 generally exempts micro/small entities. Verify Art. 2(2) exception.",
     country, sector, isLarge, isMedium };
 }
 
-// --- FORMSPREE INTEGRATION ---
-// Endpoint: https://formspree.io/f/mlgpjnjz
-// Sends the full assessment — email, all answers, and the result — as a JSON POST.
-// Field names are chosen to be human-readable in the Formspree dashboard and email.
-async function sendEmail(email, result) {
+// ---- SCORE CALCULATION ----
+function computeScore(posture) {
+  let total = 0;
+  POSTURE_QS.forEach(q => {
+    const ans = posture[q.id];
+    if (ans === "full")    total += 10;
+    else if (ans === "partial") total += 5;
+    // none = 0
+  });
+  return total; // 0-100
+}
+
+function scoreBand(score) {
+  if (score <= 30) return { cls:"band-critical",    label:"Critical",    gaugeColor:"#f87171", desc:"Significant gaps exist across multiple NIS2 requirements. Immediate action is needed before supervisory engagement." };
+  if (score <= 60) return { cls:"band-developing",  label:"Developing",  gaugeColor:"#fbbf24", desc:"Some controls are in place but key gaps remain. A structured remediation programme is required." };
+  if (score <= 85) return { cls:"band-progressing", label:"Progressing", gaugeColor:"#60a5fa", desc:"A reasonable baseline exists with specific areas needing strengthening. Focus on closing the remaining gaps." };
+  return              { cls:"band-advanced",    label:"Advanced",    gaugeColor:"#34d399", desc:"Strong posture across NIS2 requirements. Maintain through regular testing and continuous improvement." };
+}
+
+function getBarClass(ans) {
+  if (ans === "full")    return "score-10";
+  if (ans === "partial") return "score-5";
+  return "score-0";
+}
+
+function getPriority(ans) {
+  if (ans === "none")    return { cls:"p-high",   label:"High" };
+  if (ans === "partial") return { cls:"p-medium", label:"Med" };
+  return                        { cls:"p-low",    label:"Low" };
+}
+
+// ---- FORMSPREE SUBMISSION (internal lead capture — sends to you) ----
+async function submitToFormspree(email, scopeResult, score, posture) {
   const country = COUNTRIES.find(c => c.code === state.answers.country);
   const sector  = SECTORS.find(s => s.id === state.answers.sector);
+  const band    = scoreBand(score);
+
+  const postureLines = POSTURE_QS.map(q => {
+    const ans = posture[q.id] || "none";
+    const label = ans === "full" ? "Implemented" : ans === "partial" ? "Partial" : "Not started";
+    return `${q.title}: ${label} (${q.art})`;
+  }).join("\n");
 
   const payload = {
-    // Formspree uses "email" as the reply-to address automatically
-    email: email,
-
-    // Assessment inputs — readable labels for the inbox
-    "Country": country ? country.name : state.answers.country,
-    "Sector": sector ? sector.name : state.answers.sector,
-    "Employees": {
-      "under50":  "Under 50",
-      "50plus":   "50 – 249",
-      "250plus":  "250 or more",
-      "unsure":   "Not sure"
-    }[state.answers.employees] || state.answers.employees,
-    "Annual turnover": {
-      "under10m": "Under €10M",
-      "10mplus":  "€10M – €49M",
-      "50mplus":  "€50M or more",
-      "unsure":   "Not sure"
-    }[state.answers.revenue] || state.answers.revenue,
-
-    // Result
-    "NIS2 verdict": result.headline,
-    "Result state": result.state,
-    "Explanation": result.subline,
-    "Country transposition status": country ? country.status : "unknown",
-    "Country notes": country ? country.notes : "",
-
-    // Context for follow-up
-    "Consent given": state.answers.consent ? "Yes" : "No",
-    "Submitted at": new Date().toISOString(),
+    email,
+    "Country":              country ? country.name : state.answers.country,
+    "Sector":               sector  ? sector.name  : state.answers.sector,
+    "Employees":            {under50:"Under 50","50plus":"50–249","250plus":"250+",unsure:"Not sure"}[state.answers.employees] || "",
+    "Annual turnover":      {under10m:"Under €10M","10mplus":"€10M–€49M","50mplus":"€50M+",unsure:"Not sure"}[state.answers.revenue] || "",
+    "NIS2 scope verdict":   scopeResult.headline,
+    "Scope state":          scopeResult.state,
+    "Readiness score":      `${score}/100 — ${band.label}`,
+    "Posture by measure":   postureLines,
+    "Country law status":   country ? country.status : "",
+    "Consent given":        "Yes",
+    "Submitted at":         new Date().toISOString(),
   };
 
-  const response = await fetch("https://formspree.io/f/mlgpjnjz", {
+  const res = await fetch("https://formspree.io/f/mlgpjnjz", {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "Accept": "application/json"
-    },
+    headers: { "Content-Type": "application/json", "Accept": "application/json" },
     body: JSON.stringify(payload)
   });
 
-  if (!response.ok) {
-    const data = await response.json().catch(() => ({}));
-    const msg = data.errors ? data.errors.map(e => e.message).join(", ") : "Submission failed";
-    throw new Error(msg);
+  if (!res.ok) {
+    const data = await res.json().catch(() => ({}));
+    throw new Error(data.errors ? data.errors.map(e => e.message).join(", ") : "Formspree submission failed");
+  }
+  return res.json();
+}
+
+/*
+============================================================
+EMAILJS TEMPLATE SPEC
+============================================================
+Create this template at emailjs.com > Email Templates > New Template.
+Use the variable names exactly as shown (double curly braces).
+
+--- SUBJECT ---
+Your NIS2 Readiness Assessment — {{score}}/100 ({{band}})
+
+--- BODY (plain text recommended for deliverability) ---
+
+Dear colleague,
+
+Thank you for completing the BARE Consult NIS2 Readiness Assessment.
+Here is a summary of your results.
+
+─────────────────────────────────────────
+READINESS SCORE: {{score}}/100 — {{band}}
+─────────────────────────────────────────
+{{band_desc}}
+
+─────────────────────────────────────────
+NIS2 SCOPE DETERMINATION
+─────────────────────────────────────────
+Verdict:  {{scope_verdict}}
+Country:  {{country}}
+Sector:   {{sector}}
+Detail:   {{scope_detail}}
+
+─────────────────────────────────────────
+CONTROL GAP SUMMARY (Article 21(2))
+─────────────────────────────────────────
+{{gaps_summary}}
+
+─────────────────────────────────────────
+PERSONALISED RECOMMENDATIONS
+─────────────────────────────────────────
+{{recommendations}}
+
+─────────────────────────────────────────
+NEXT STEPS
+─────────────────────────────────────────
+This self-assessment identifies your gaps — a full NIS2 Readiness
+Assessment turns them into a board-ready report with evidence-based
+findings and a prioritised remediation roadmap.
+
+Fixed fee: €1,500 · Delivered in 5 business days
+
+Book a free 30-minute scoping call:
+{{cta_url}}
+
+─────────────────────────────────────────
+IMPORTANT DISCLAIMER
+─────────────────────────────────────────
+This assessment is a self-reported screening tool only. It is not
+legal advice and does not constitute a certified compliance
+determination. Always engage qualified professionals before acting
+on these results.
+
+BARE Consult · www.bare-consult.com
+To unsubscribe, reply with "unsubscribe" in the subject line.
+
+============================================================
+*/
+
+// ---- STATE ----
+const state = {
+  phase: 1,         // 1=scope, 1.5=bridge, 2=posture, 3=email, 4=result
+  step: 0,          // global step index 0-15
+  answers: {},      // all answers keyed by question id
+  scopeResult: null,
+  score: null,
+};
+
+const TOTAL_STEPS = 16; // 5 scope + 10 posture + 1 email
+
+// ---- PHASE/PROGRESS UPDATE ----
+function updateChrome() {
+  const s = state.step;
+  const pct = Math.round((s / TOTAL_STEPS) * 100);
+
+  document.getElementById("progressFill").style.width = pct + "%";
+  document.getElementById("progressFrac").textContent = pct + "%";
+
+  if (state.phase === 4) {
+    document.getElementById("progressWrap").style.display = "none";
+    document.getElementById("phaseBar").style.display = "none";
+    return;
   }
 
-  return response.json();
+  document.getElementById("progressWrap").style.display = "block";
+  document.getElementById("phaseBar").style.display = "flex";
+
+  const stepLabel = s < 16 ? `Step ${s+1} of ${TOTAL_STEPS}` : "Complete";
+  document.getElementById("progressTitle").textContent = stepLabel;
+
+  // Phase bar
+  const pf1 = document.getElementById("pf1"), pl1 = document.getElementById("pl1");
+  const pf2 = document.getElementById("pf2"), pl2 = document.getElementById("pl2");
+  const pf3 = document.getElementById("pf3"), pl3 = document.getElementById("pl3");
+
+  // Reset
+  [pf1,pf2,pf3].forEach(f => { f.classList.remove("active","partial"); });
+  [pl1,pl2,pl3].forEach(l => l.classList.remove("active"));
+
+  if (s <= 5) {
+    pf1.classList.add(s === 0 ? "partial" : "active"); pl1.classList.add("active");
+  } else if (s <= 15) {
+    pf1.classList.add("active");
+    pf2.classList.add(s <= 6 ? "partial" : s <= 15 ? "active" : "active");
+    if (s >= 6) pl2.classList.add("active");
+  } else {
+    pf1.classList.add("active"); pf2.classList.add("active");
+    pf3.classList.add(s === 15 ? "partial" : "active");
+    pl3.classList.add("active");
+  }
 }
 
-// --- WIZARD STATE ---
-const state = { step:0, answers:{}, result:null };
-const TOTAL_STEPS = 5;
+// ---- RENDER ROUTER ----
+function render() {
+  updateChrome();
+  const main = document.getElementById("main");
+  main.innerHTML = "";
 
-const STEPS = [
-  { id:"country",   eyebrow:"Step 1 of 5 — Location",  type:"select",
-    title:"Where is your company headquartered?",
-    desc:"NIS2 applies per the law of the EU member state where you are established. If you operate across multiple countries, select your primary HQ.",
-    optionsFrom:"countries", placeholder:"Select a country…", err:"Please select a country." },
-  { id:"sector",    eyebrow:"Step 2 of 5 — Sector",    type:"select",
-    title:"What sector does your organisation primarily operate in?",
-    desc:"NIS2 applies only to entities in Annex I (essential) and Annex II (important) sectors. Select the closest match to your primary business.",
-    optionsFrom:"sectors", placeholder:"Select a sector…", err:"Please select a sector." },
-  { id:"employees", eyebrow:"Step 3 of 5 — Size",      type:"radio",
-    title:"How many employees does your company have?",
-    desc:"Use full-time equivalents across the whole group (Art. 2 thresholds apply at group level). Micro: under 10. Small: 10–49. Medium: 50–249. Large: 250+.",
-    options:[{v:"under50",label:"Under 50"},{v:"50plus",label:"50 – 249"},{v:"250plus",label:"250 or more"},{v:"unsure",label:"Not sure"}],
-    err:"Please select your employee count." },
-  { id:"revenue",   eyebrow:"Step 4 of 5 — Revenue",   type:"radio",
-    title:"What is your annual net turnover?",
-    desc:"Use net turnover (total sales before deductions). The balance sheet test may also apply — use turnover as the primary indicator. EU SME definition applies.",
-    options:[{v:"under10m",label:"Under €10M"},{v:"10mplus",label:"€10M – €49M"},{v:"50mplus",label:"€50M or more"},{v:"unsure",label:"Not sure"}],
-    err:"Please select your annual turnover." },
-  { id:"email",     eyebrow:"Step 5 of 5 — Your result", type:"email",
-    title:"Where should we send your assessment?",
-    desc:"Enter your work email to receive a summary of your result and a complimentary NIS2 readiness guide.",
-    err:"Please enter a valid email address." },
+  if (state.phase === 1) {
+    main.appendChild(buildScopeStep(state.step));
+  } else if (state.phase === 1.5) {
+    main.appendChild(buildBridge());
+  } else if (state.phase === 2) {
+    main.appendChild(buildPostureStep(state.step - 5));
+  } else if (state.phase === 3) {
+    main.appendChild(buildEmailStep());
+  } else {
+    buildResult(main);
+  }
+}
+
+// ---- SCOPE STEPS (0-4) ----
+const SCOPE_STEPS = [
+  { id:"country",   title:"Where is your company headquartered?",
+    desc:"NIS2 applies per the member state where you are established. Multi-country: select primary HQ.",
+    type:"select", optionsFrom:"countries", placeholder:"Select a country…" },
+  { id:"sector",    title:"Which sector does your organisation operate in?",
+    desc:"NIS2 applies only to organisations in the 18 sectors listed in Annexes I and II.",
+    type:"select", optionsFrom:"sectors", placeholder:"Select a sector…" },
+  { id:"employees", title:"How many employees does your company have?",
+    desc:"Use FTE count across the group. Micro: <10 · Small: 10–49 · Medium: 50–249 · Large: 250+",
+    type:"radio",
+    options:[{v:"under50",l:"Under 50"},{v:"50plus",l:"50 – 249"},{v:"250plus",l:"250 or more"},{v:"unsure",l:"Not sure"}] },
+  { id:"revenue",   title:"What is your annual net turnover?",
+    desc:"EU SME definition applies. Either employees OR revenue meeting the threshold triggers scope.",
+    type:"radio",
+    options:[{v:"under10m",l:"Under €10M"},{v:"10mplus",l:"€10M – €49M"},{v:"50mplus",l:"€50M or more"},{v:"unsure",l:"Not sure"}] },
+  { id:"org_size",  title:"How would you describe your organisation?",
+    desc:"This helps calibrate the depth of recommendations.",
+    type:"radio",
+    options:[{v:"startup",l:"Start-up",sub:"<5 years, <50 staff"},{v:"sme",l:"SME",sub:"50–249 staff"},{v:"mid",l:"Mid-market",sub:"250–999 staff"},{v:"enterprise",l:"Enterprise",sub:"1000+ staff"}] },
 ];
 
-// --- PROGRESS ---
-function updateProgress() {
-  const pct = Math.round((state.step / TOTAL_STEPS) * 100);
-  document.getElementById("progressFill").style.width = pct + "%";
-  document.getElementById("progressCount").textContent = pct + "%";
-  const labels = ["Step 1 of 5","Step 2 of 5","Step 3 of 5","Step 4 of 5","Step 5 of 5","Complete"];
-  document.getElementById("progressLabel").textContent = labels[Math.min(state.step, 5)];
-}
+function buildScopeStep(stepIdx) {
+  const s = SCOPE_STEPS[stepIdx];
+  const el = document.createElement("div");
+  el.className = "card";
 
-// --- RENDER STEP ---
-function renderStep(idx) {
-  const s = STEPS[idx];
-  const container = document.getElementById("stepsContainer");
-
-  let h = `<div class="card">
-    <div class="step-eyebrow">${escapeHtml(s.eyebrow)}</div>
-    <h1 class="step-title">${escapeHtml(s.title)}</h1>
-    <p class="step-desc">${escapeHtml(s.desc)}</p>`;
+  let h = `<div class="q-meta">Phase 1 — Scope · Question ${stepIdx+1} of 5</div>
+    <h2 class="q-title">${escapeHtml(s.title)}</h2>
+    <p class="q-desc">${escapeHtml(s.desc)}</p>`;
 
   if (s.type === "select") {
     const opts = s.optionsFrom === "countries" ? COUNTRIES : SECTORS;
-    h += `<div class="field" id="fWrap">
-      <label for="sInput">Select one</label>
-      <select id="sInput">
+    h += `<div class="styled-select-wrap">
+      <select class="styled-select" id="sInput">
         <option value="">${escapeHtml(s.placeholder)}</option>`;
     if (s.optionsFrom === "countries") {
       opts.forEach(c => {
-        const sel = state.answers[s.id] === c.code ? " selected" : "";
-        h += `<option value="${escapeHtml(c.code)}"${sel}>${escapeHtml(c.name)}</option>`;
+        h += `<option value="${escapeHtml(c.code)}" ${state.answers[s.id]===c.code?"selected":""}>${escapeHtml(c.name)}</option>`;
       });
     } else {
-      h += `<optgroup label="Annex I — Essential Entity Sectors">`;
-      opts.filter(o => o.annex === "I").forEach(o => {
-        const sel = state.answers[s.id] === o.id ? " selected" : "";
-        h += `<option value="${escapeHtml(o.id)}"${sel}>${escapeHtml(o.name)}</option>`;
+      h += `<optgroup label="Annex I — Essential Sectors">`;
+      opts.filter(o=>o.annex==="I").forEach(o => {
+        h += `<option value="${escapeHtml(o.id)}" ${state.answers[s.id]===o.id?"selected":""}>${escapeHtml(o.name)}</option>`;
       });
-      h += `</optgroup><optgroup label="Annex II — Important Entity Sectors">`;
-      opts.filter(o => o.annex === "II").forEach(o => {
-        const sel = state.answers[s.id] === o.id ? " selected" : "";
-        h += `<option value="${escapeHtml(o.id)}"${sel}>${escapeHtml(o.name)}</option>`;
+      h += `</optgroup><optgroup label="Annex II — Important Sectors">`;
+      opts.filter(o=>o.annex==="II").forEach(o => {
+        h += `<option value="${escapeHtml(o.id)}" ${state.answers[s.id]===o.id?"selected":""}>${escapeHtml(o.name)}</option>`;
       });
       h += `</optgroup><optgroup label="Other">`;
-      opts.filter(o => o.annex === null).forEach(o => {
-        const sel = state.answers[s.id] === o.id ? " selected" : "";
-        h += `<option value="${escapeHtml(o.id)}"${sel}>${escapeHtml(o.name)}</option>`;
+      opts.filter(o=>!o.annex).forEach(o => {
+        h += `<option value="${escapeHtml(o.id)}" ${state.answers[s.id]===o.id?"selected":""}>${escapeHtml(o.name)}</option>`;
       });
       h += `</optgroup>`;
     }
-    h += `</select>
-      <div class="field-error" id="fErr">${escapeHtml(s.err)}</div>
-    </div>`;
+    h += `</select></div>
+    <div class="field-err" id="fErr">Please make a selection to continue.</div>`;
 
-  } else if (s.type === "radio") {
-    h += `<div class="radio-group" id="radioGroup">`;
+  } else {
+    const cols = s.options.length <= 2 ? "two" : "two";
+    h += `<div class="opt-grid ${cols}" id="opts">`;
     s.options.forEach(o => {
-      const chk = state.answers[s.id] === o.v ? " checked" : "";
-      h += `<label class="radio-card">
-        <input type="radio" name="sRadio" value="${escapeHtml(o.v)}"${chk}>
-        <span class="radio-card-label">${escapeHtml(o.label)}</span>
+      const chk = state.answers[s.id] === o.v ? "checked" : "";
+      h += `<label class="opt-card">
+        <input type="radio" name="sr" value="${escapeHtml(o.v)}" ${chk}>
+        <span class="opt-label">${escapeHtml(o.l)}${o.sub ? `<span class="opt-sub">${escapeHtml(o.sub)}</span>` : ""}</span>
       </label>`;
     });
     h += `</div>
-    <div class="field-error" id="fErr" style="margin-top:-1rem;margin-bottom:0.5rem;">${escapeHtml(s.err)}</div>`;
-
-  } else if (s.type === "email") {
-    // FIX: Privacy link has NO onclick here — it is wired via addEventListener below.
-    // Inline onclick handlers in innerHTML strings are stripped by browsers (security policy).
-    h += `<div class="field" id="fWrap">
-      <label for="sInput">Work email address</label>
-      <input type="email" id="sInput" placeholder="you@company.com"
-             value="${escapeHtml(state.answers.email || '')}"
-             autocomplete="email" spellcheck="false">
-      <div class="field-error" id="fErr">${escapeHtml(s.err)}</div>
-    </div>
-    <div class="consent-wrap" id="consentWrap">
-      <input type="checkbox" id="consentChk" ${state.answers.consent ? "checked" : ""}>
-      <label for="consentChk">I agree to receive my NIS2 assessment result and the readiness guide by email.
-        I have read the <a href="#" id="privacyLink" class="privacy-link">Privacy Notice</a>
-        and consent to my email address being used for this purpose. I can unsubscribe at any time.
-      </label>
-    </div>`;
+    <div class="field-err" id="fErr">Please select an option to continue.</div>`;
   }
 
-  h += `<div class="btn-row">`;
-  if (idx > 0) h += `<button class="btn btn-ghost" id="btnBack">← Back</button>`;
-  h += `<button class="btn btn-primary" id="btnNext">${idx === STEPS.length - 1 ? "Get My Result →" : "Continue →"}</button>`;
-  h += `</div></div>`;
-
-  container.innerHTML = h;
-  updateProgress();
-
-  // FIX: Wire privacy link here, AFTER innerHTML is set, so the element exists in the DOM.
-  // This is the only reliable way — inline onclick in injected HTML is blocked by browsers.
-  const privacyLink = document.getElementById("privacyLink");
-  if (privacyLink) {
-    privacyLink.addEventListener("click", function(e) {
-      e.preventDefault();          // stop the # href doing anything
-      e.stopPropagation();         // stop the click reaching the <label> and toggling the checkbox
-      window.open("https://www.bare-consult.com/privacy-statement", "_blank", "noopener,noreferrer");
-    });
-  }
-
-  // Wire navigation buttons
-  document.getElementById("btnNext").addEventListener("click", handleNext);
-  const backBtn = document.getElementById("btnBack");
-  if (backBtn) backBtn.addEventListener("click", handleBack);
-
-  // Auto-advance on radio selection
-  if (s.type === "radio") {
-    document.querySelectorAll('input[name="sRadio"]').forEach(r => {
-      r.addEventListener("change", () => setTimeout(handleNext, 260));
-    });
-  }
-
-  // Enter key submits
-  const inp = document.getElementById("sInput");
-  if (inp) inp.addEventListener("keydown", e => { if (e.key === "Enter") handleNext(); });
-}
-
-// --- HANDLE NEXT ---
-function handleNext() {
-  const s = STEPS[state.step];
-
-  if (s.type === "select") {
-    const val = document.getElementById("sInput").value;
-    if (!val) { document.getElementById("fWrap").classList.add("error"); return; }
-    document.getElementById("fWrap").classList.remove("error");
-    state.answers[s.id] = val;
-
-  } else if (s.type === "radio") {
-    const checked = document.querySelector('input[name="sRadio"]:checked');
-    const errEl = document.getElementById("fErr");
-    if (!checked) { if (errEl) errEl.style.display = "block"; return; }
-    if (errEl) errEl.style.display = "none";
-    state.answers[s.id] = checked.value;
-
-  } else if (s.type === "email") {
-    const val = document.getElementById("sInput").value.trim();
-    const consent = document.getElementById("consentChk").checked;
-    const emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(val);
-
-    if (!emailOk) {
-      document.getElementById("fWrap").classList.add("error");
-      document.getElementById("fErr").textContent = "Please enter a valid email address.";
-      return;
-    }
-    document.getElementById("fWrap").classList.remove("error");
-
-    if (!consent) {
-      // FIX: use CSS class instead of inline style — cleaner and reliably removed on re-render
-      const cw = document.getElementById("consentWrap");
-      cw.classList.add("consent-error");
-      setTimeout(() => { cw.classList.remove("consent-error"); }, 2000);
-      return;
-    }
-    state.answers.email = val;
-    state.answers.consent = true;
-  }
-
-  state.step++;
-  if (state.step === STEPS.length) {
-    state.result = evaluate(state.answers);
-    renderResult();
-  } else {
-    renderStep(state.step);
-  }
-}
-
-// --- HANDLE BACK ---
-function handleBack() {
-  if (state.step > 0) { state.step--; renderStep(state.step); }
-}
-
-// --- RENDER RESULT ---
-function renderResult() {
-  const r = state.result;
-  updateProgress();
-  document.getElementById("progressLabel").textContent = "Assessment complete";
-  document.getElementById("progressFill").style.width = "100%";
-  document.getElementById("progressCount").textContent = "100%";
-
-  const SC = { "in-scope":"in-scope", "possibly":"possibly", "exempt":"exempt", "check-law":"check-law" };
-  const ICONS = { "in-scope":"⚠", "possibly":"?", "exempt":"✓", "check-law":"!" };
-
-  const country = r.country;
-  const sector  = r.sector;
-
-  const statusBadge = country ? ({
-    law:   `<span class="country-status law">● Law in force</span>`,
-    draft: `<span class="country-status draft">◑ Transposition in progress</span>`,
-    delay: `<span class="country-status delay">○ Not yet transposed</span>`
-  })[country.status] : "";
-
-  const reasons = [];
-  if (sector && sector.annex) {
-    reasons.push(`Sector: "${escapeHtml(sector.name)}" is listed in NIS2 Annex ${escapeHtml(sector.annex)} — ${escapeHtml(sector.cls)} entity sector.`);
-  } else if (sector) {
-    reasons.push("Your sector does not appear in NIS2 Annex I or Annex II.");
-  }
-  if (r.isLarge) {
-    reasons.push("Size: meets large entity threshold (≥250 employees or ≥€50M turnover).");
-  } else if (r.isMedium) {
-    reasons.push("Size: meets medium entity threshold (≥50 employees and ≥€10M turnover).");
-  } else if (!r.isLarge && !r.isMedium && state.answers.employees !== "unsure" && state.answers.revenue !== "unsure") {
-    reasons.push("Size: below medium entity thresholds (under 50 employees or under €10M turnover).");
-  }
-  if (sector && sector.override) {
-    reasons.push("Critical sector flag: Art. 2(2) 'critical entity' exception may apply — requires legal confirmation.");
-  }
-  if (country) {
-    reasons.push(`${escapeHtml(country.name)} transposition: ${escapeHtml(country.notes)}`);
-  }
-
-  const NEXT_STEPS = {
-    "in-scope": [
-      "Register with your national competent authority (NCA) — most countries require self-registration.",
-      "Conduct a formal NIS2 gap assessment against all Article 21(2) requirements.",
-      "Establish or update your Information Security Policy hierarchy.",
-      "Implement Article 23 incident reporting (24h early warning / 72h notification / 1-month final report).",
-      "Confirm management body training and governance obligations are met (Article 20).",
-    ],
-    "possibly": [
-      "Obtain a legal opinion on whether the Art. 2(2) critical entity exception applies to your case.",
-      "Monitor your national competent authority for sector-specific guidance and registration requirements.",
-      "Begin a gap assessment proactively — compliance timelines can be tight once confirmed.",
-      "Verify that the transposition law has come into force and review its scope provisions.",
-    ],
-    "exempt": [
-      "Document your assessment rationale in case of supervisory enquiry.",
-      "Monitor: NIS2 scope may expand via delegated acts or stricter national transposition.",
-      "NIS2-aligned security practices are good governance even if you're not in scope.",
-      "Reassess if your company grows above 50 employees or €10M turnover.",
-    ],
-    "check-law": [
-      "Check your national competent authority's website for the latest transposition timeline.",
-      "Monitor the ENISA NIS transposition tracker at enisa.europa.eu.",
-      "Prepare proactively — the Directive's substance is clear even where law is pending.",
-      "Seek local legal advice on timing obligations as soon as the law is enacted.",
-    ]
-  };
-
-  let h = `<div class="card">
-    <div class="result-verdict ${escapeHtml(SC[r.state])}">
-      <div class="verdict-icon">${ICONS[r.state]}</div>
-      <div class="verdict-text">
-        <h2>${escapeHtml(r.headline)}</h2>
-        <p>${escapeHtml(r.subline)}</p>
-      </div>
-    </div>`;
-
-  if (country) {
-    h += `<div class="result-section">
-      <h3>Country — ${escapeHtml(country.name)}</h3>
-      ${statusBadge}
-      <p style="margin-top:0.45rem;">${escapeHtml(country.notes)}</p>
-    </div><div class="divider"></div>`;
-  }
-
-  if (reasons.length) {
-    h += `<div class="result-section">
-      <h3>Why this result</h3>
-      <ul>${reasons.map(x => `<li>${x}</li>`).join("")}</ul>
-    </div><div class="divider"></div>`;
-  }
-
-  const ns = NEXT_STEPS[r.state] || [];
-  if (ns.length) {
-    h += `<div class="result-section">
-      <h3>Recommended next steps</h3>
-      <ul>${ns.map(x => `<li>${escapeHtml(x)}</li>`).join("")}</ul>
-    </div>`;
-  }
-
-  if (r.state === "in-scope" || r.state === "possibly") {
-    h += `<div class="cta-block">
-      <h3>Get your full NIS2 Readiness Assessment</h3>
-      <p>A structured gap analysis against all 10 Article 21(2) requirements — with a prioritised remediation roadmap and policy framework outline tailored to your sector and entity classification.</p>
-      <span class="cta-price">€1,500 — fixed fee · delivered in 5 business days</span>
-      <button class="btn-cta" id="ctaBtn">Book your assessment →</button>
-    </div>`;
-  }
-
-  h += `<div id="emailStatus"></div>`;
-
-  h += `<div class="disclaimer">
-    <strong>Important:</strong> This tool is a preliminary self-screening aid only.
-    It is <strong>not legal advice</strong>. NIS2 has been transposed differently across EU member states;
-    national laws may extend scope, add sector-specific rules, or alter thresholds.
-    Transposition status data is from mid-2025 and may be out of date.
-    Always consult a qualified legal or compliance professional before acting on this result.
-  </div>
-  <button class="reassess-btn" id="btnReassess">↩ Start a new assessment</button>
+  h += `<div class="btn-row">
+    <button class="btn-back" id="bBack" ${stepIdx===0?"disabled":""}>← Back</button>
+    <button class="btn-next" id="bNext">Continue →</button>
   </div>`;
 
-  document.getElementById("stepsContainer").innerHTML = h;
+  el.innerHTML = h;
 
-  // Wire CTA button after DOM injection — same pattern as privacy link fix.
-  // Inline href/onclick in injected innerHTML is unreliable across browsers.
+  // Wire back
+  const backBtn = el.querySelector("#bBack");
+  if (backBtn && stepIdx > 0) {
+    backBtn.addEventListener("click", () => { state.step--; render(); });
+  }
+
+  // Wire next
+  el.querySelector("#bNext").addEventListener("click", () => {
+    if (s.type === "select") {
+      const val = el.querySelector("#sInput").value;
+      if (!val) { el.querySelector("#fErr").classList.add("show"); return; }
+      state.answers[s.id] = val;
+    } else {
+      const checked = el.querySelector('input[name="sr"]:checked');
+      if (!checked) { el.querySelector("#fErr").classList.add("show"); return; }
+      state.answers[s.id] = checked.value;
+    }
+    state.step++;
+    if (state.step === 5) {
+      // Scope phase complete — compute scope result and show bridge
+      state.scopeResult = evaluateScope(state.answers);
+      state.phase = 1.5;
+    }
+    render();
+  });
+
+  // Auto-advance radios
+  if (s.type === "radio") {
+    el.querySelectorAll('input[name="sr"]').forEach(r => {
+      r.addEventListener("change", () => {
+        state.answers[s.id] = r.value;
+        setTimeout(() => el.querySelector("#bNext").click(), 260);
+      });
+    });
+  }
+
+  return el;
+}
+
+// ---- BRIDGE ----
+function buildBridge() {
+  const r = state.scopeResult;
+  const el = document.createElement("div");
+  el.className = "phase-bridge";
+
+  const stateIcons = { "in-scope":"⚠️", "possibly":"🔍", "exempt":"✅", "check-law":"📋" };
+  const stateLabels = { "in-scope":"Likely In Scope", "possibly":"Possibly In Scope", "exempt":"Likely Exempt", "check-law":"Law Status Unclear" };
+
+  el.innerHTML = `
+    <div class="bridge-icon">🛡️</div>
+    <div class="scope-result-mini ${escapeHtml(r.state)}">${stateIcons[r.state]} ${stateLabels[r.state]}</div>
+    <h2>Scope determination complete</h2>
+    <p>${escapeHtml(r.subline)}<br><br>
+    Now let's assess your <strong style="color:var(--text)">current security posture</strong> against the 10 NIS2 Article 21(2) requirements — so we can calculate your readiness score and identify your specific gaps.</p>
+    <div class="btn-row" style="justify-content:center;border-top:none;padding-top:0;">
+      <button class="btn-back" id="bBridgeBack">← Revise scope</button>
+      <button class="btn-next" id="bBridgeNext" style="flex:0;padding:0.75rem 2rem;">Start posture assessment →</button>
+    </div>`;
+
+  el.querySelector("#bBridgeBack").addEventListener("click", () => {
+    state.step = 4; state.phase = 1; render();
+  });
+  el.querySelector("#bBridgeNext").addEventListener("click", () => {
+    state.phase = 2; render();
+  });
+
+  return el;
+}
+
+// ---- POSTURE STEPS (step 5-14, qIdx 0-9) ----
+function buildPostureStep(qIdx) {
+  const q = POSTURE_QS[qIdx];
+  const el = document.createElement("div");
+  el.className = "card";
+
+  const options = [
+    { v:"none",    l:"Not started",  sub:"No controls in place",            scoreClass:"score-0" },
+    { v:"partial", l:"Partially implemented", sub:"Some controls, gaps remain", scoreClass:"score-5" },
+    { v:"full",    l:"Fully implemented", sub:"Controls in place and tested",  scoreClass:"score-10" },
+  ];
+
+  let h = `<div class="q-meta">Phase 2 — Security Posture · Control ${qIdx+1} of 10</div>
+    <div class="art-ref">⚡ ${escapeHtml(q.art)}</div>
+    <h2 class="q-title">${escapeHtml(q.title)}</h2>
+    <p class="q-desc">${escapeHtml(q.desc)}</p>
+    <div class="opt-grid three" id="opts">`;
+
+  options.forEach(o => {
+    const chk = state.answers[q.id] === o.v ? "checked" : "";
+    h += `<label class="opt-card">
+      <input type="radio" name="pr" value="${escapeHtml(o.v)}" ${chk}>
+      <span class="opt-label">
+        <span><span class="opt-score ${o.scoreClass}"></span>${escapeHtml(o.l)}</span>
+        <span class="opt-sub">${escapeHtml(o.sub)}</span>
+      </span>
+    </label>`;
+  });
+
+  h += `</div>
+    <div class="field-err" id="fErr">Please select your current status.</div>
+    <div class="btn-row">
+      <button class="btn-back" id="bBack">← Back</button>
+      <button class="btn-next" id="bNext">${qIdx === 9 ? "Continue to final step →" : "Continue →"}</button>
+    </div>`;
+
+  el.innerHTML = h;
+
+  el.querySelector("#bBack").addEventListener("click", () => {
+    if (qIdx === 0) { state.phase = 1.5; render(); }
+    else { state.step--; render(); }
+  });
+
+  el.querySelector("#bNext").addEventListener("click", () => {
+    const checked = el.querySelector('input[name="pr"]:checked');
+    if (!checked) { el.querySelector("#fErr").classList.add("show"); return; }
+    state.answers[q.id] = checked.value;
+    state.step++;
+    if (state.step === 15) { state.phase = 3; }
+    render();
+  });
+
+  el.querySelectorAll('input[name="pr"]').forEach(r => {
+    r.addEventListener("change", () => {
+      state.answers[q.id] = r.value;
+      setTimeout(() => el.querySelector("#bNext").click(), 260);
+    });
+  });
+
+  return el;
+}
+
+// ---- EMAIL STEP ----
+function buildEmailStep() {
+  const el = document.createElement("div");
+  el.className = "card";
+
+  // Preview the score as a teaser
+  const previewScore = computeScore(state.answers);
+  const band = scoreBand(previewScore);
+
+  el.innerHTML = `
+    <div class="q-meta">Phase 3 — Your Results</div>
+    <h2 class="q-title">Almost there — one last step</h2>
+    <p class="q-desc">Enter your work email to unlock your full results. We'll also be in touch if we think we can help.</p>
+    <div style="display:flex;align-items:center;gap:0.75rem;background:var(--bg-2);border:1px solid var(--border-l);border-radius:var(--r-sm);padding:0.85rem 1rem;margin-bottom:1.25rem;">
+      <span style="font-family:var(--serif);font-size:1.6rem;font-weight:600;color:var(--text);">${previewScore}</span>
+      <span style="font-family:var(--mono);font-size:0.75rem;color:var(--text-dim);">/100</span>
+      <span class="score-band ${band.cls}" style="margin:0 0 0 0.25rem;">${band.label}</span>
+      <span style="font-size:0.78rem;color:var(--text-mid);margin-left:auto;">Your readiness score</span>
+    </div>
+    <div class="email-field">
+      <label class="field-label" for="emailIn">Work email address</label>
+      <input type="email" class="text-input" id="emailIn" placeholder="you@company.com"
+             value="${escapeHtml(state.answers.email||"")}" autocomplete="email" spellcheck="false">
+      <div class="field-err" id="emailErr">Please enter a valid email address.</div>
+    </div>
+    <div class="consent-box" id="consentBox">
+      <input type="checkbox" id="consentChk" ${state.answers.consent?"checked":""}>
+      <label for="consentChk">I agree to be contacted by BARE Consult regarding NIS2 compliance.
+        I have read the <a href="#" id="privacyLink" class="privacy-link">Privacy Notice</a>
+        and consent to my email being used for this purpose. I can unsubscribe at any time.
+      </label>
+    </div>
+    <div class="btn-row">
+      <button class="btn-back" id="bBack">← Back</button>
+      <button class="btn-next" id="bNext">Reveal my results →</button>
+    </div>`;
+
+  // Wire privacy link
+  el.querySelector("#privacyLink").addEventListener("click", e => {
+    e.preventDefault(); e.stopPropagation();
+    window.open("https://www.bare-consult.com/privacy-statement", "_blank", "noopener,noreferrer");
+  });
+
+  el.querySelector("#bBack").addEventListener("click", () => {
+    state.step = 14; state.phase = 2; render();
+  });
+
+  el.querySelector("#emailIn").addEventListener("keydown", e => {
+    if (e.key === "Enter") el.querySelector("#bNext").click();
+  });
+
+  el.querySelector("#bNext").addEventListener("click", () => {
+    const email = el.querySelector("#emailIn").value.trim();
+    const consent = el.querySelector("#consentChk").checked;
+
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) {
+      el.querySelector("#emailIn").classList.add("err");
+      el.querySelector("#emailErr").classList.add("show");
+      return;
+    }
+    if (!consent) {
+      el.querySelector("#consentBox").classList.add("err");
+      setTimeout(() => el.querySelector("#consentBox").classList.remove("err"), 2000);
+      return;
+    }
+
+    state.answers.email = email;
+    state.answers.consent = true;
+    state.score = computeScore(state.answers);
+    state.phase = 4;
+    render();
+  });
+
+  return el;
+}
+
+// ---- RESULT PAGE ----
+function buildResult(container) {
+  const score = state.score;
+  const band  = scoreBand(score);
+  const sr    = state.scopeResult;
+  const country = sr.country;
+  const sector  = sr.sector;
+
+  // Build HTML
+  let h = `<div class="result-wrap">`;
+
+  // --- GAUGE ---
+  const circumference = 283;
+  const dashOffset = circumference - (score / 100) * circumference;
+
+  h += `<div class="gauge-section">
+    <div class="gauge-label">Compliance Readiness Score — Self-Reported</div>
+    <div class="gauge-wrap">
+      <svg class="gauge-svg" viewBox="0 0 180 95">
+        <path class="gauge-track" d="M 20 90 A 70 70 0 0 1 160 90" />
+        <path class="gauge-fill" id="gaugeFill"
+          d="M 20 90 A 70 70 0 0 1 160 90"
+          stroke="${band.gaugeColor}"
+          stroke-dasharray="${circumference}"
+          stroke-dashoffset="${circumference}" />
+        <text class="gauge-number" x="90" y="82" text-anchor="middle" id="gaugeNum">0</text>
+        <text class="gauge-denom" x="90" y="95" text-anchor="middle">/100</text>
+      </svg>
+    </div>
+    <div class="score-band ${band.cls}" style="margin:0 auto 0.5rem;">${band.label}</div>
+    <p class="gauge-desc">${escapeHtml(band.desc)}</p>
+    <div class="self-report-note">⚠ Score is based on self-reported answers. Not a certified audit result.</div>
+  </div>`;
+
+  // --- VERDICT CARDS ---
+  const stateLabels = { "in-scope":"Likely In Scope","possibly":"Possibly In Scope","exempt":"Likely Exempt","check-law":"Law Status Unclear" };
+  const lawLabels = { law:"Law in force", draft:"Transposition in progress", delay:"Not yet transposed" };
+
+  h += `<div class="verdict-row">
+    <div class="verdict-card">
+      <div class="vc-label">NIS2 Scope</div>
+      <div class="vc-badge ${escapeHtml(sr.state)}">${stateLabels[sr.state]||sr.state}</div>
+      <div class="vc-sub">${escapeHtml(sr.subline)}</div>
+    </div>
+    <div class="verdict-card">
+      <div class="vc-label">Country — ${country ? escapeHtml(country.name) : ""}</div>
+      <div class="vc-badge ${country ? escapeHtml(country.status) : ""}">${country ? lawLabels[country.status] : ""}</div>
+      <div class="vc-sub">${country ? escapeHtml(country.notes) : ""}</div>
+    </div>
+  </div>`;
+
+  // --- GAP CHART ---
+  h += `<div class="gap-section">
+    <div class="section-header">
+      <span class="section-title">Article 21(2) Gap Assessment</span>
+      <span class="section-sub">10 measures</span>
+    </div>
+    <div class="gap-legend">
+      <div class="legend-item"><div class="legend-dot" style="background:var(--green)"></div>Implemented (10)</div>
+      <div class="legend-item"><div class="legend-dot" style="background:var(--amber)"></div>Partial (5)</div>
+      <div class="legend-item"><div class="legend-dot" style="background:var(--red)"></div>Not started (0)</div>
+    </div>`;
+
+  POSTURE_QS.forEach((q, i) => {
+    const ans = state.answers[q.id] || "none";
+    const pts = ans === "full" ? 10 : ans === "partial" ? 5 : 0;
+    const pct = (pts / 10) * 100;
+    const barCls = getBarClass(ans);
+    h += `<div class="gap-item">
+      <div class="gap-row">
+        <span class="gap-name">${escapeHtml(q.title)}</span>
+        <span class="gap-score-val">${pts}/10</span>
+      </div>
+      <div class="gap-bar-track">
+        <div class="gap-bar-fill ${barCls}" id="bar${i}" style="width:0%"></div>
+      </div>
+      <div class="gap-art">${escapeHtml(q.art)}</div>
+    </div>`;
+  });
+
+  h += `</div>`;
+
+  // --- RECOMMENDATIONS ---
+  // Sort by score ascending (lowest first = highest priority)
+  const sorted = POSTURE_QS
+    .map(q => ({ q, ans: state.answers[q.id] || "none" }))
+    .filter(({ ans }) => ans !== "full")
+    .sort((a, b) => {
+      const pts = { none: 0, partial: 5, full: 10 };
+      return pts[a.ans] - pts[b.ans];
+    });
+
+  if (sorted.length > 0) {
+    h += `<div class="rec-section">
+      <div class="section-header">
+        <span class="section-title">Personalised Recommendations</span>
+        <span class="section-sub">${sorted.length} action${sorted.length>1?"s":""}</span>
+      </div>`;
+
+    sorted.forEach(({ q, ans }, i) => {
+      const p = getPriority(ans);
+      h += `<div class="rec-item">
+        <div class="rec-priority ${p.cls}">${p.label}</div>
+        <div class="rec-body">
+          <div class="rec-title">${escapeHtml(q.rec_title)}</div>
+          <div class="rec-desc">${escapeHtml(q.rec_desc)}</div>
+          <span class="rec-tag">${escapeHtml(q.art)}</span>
+        </div>
+      </div>`;
+    });
+
+    h += `</div>`;
+  } else {
+    h += `<div class="rec-section" style="text-align:center;padding:2rem;">
+      <div style="font-size:1.5rem;margin-bottom:0.5rem;">🏆</div>
+      <div style="font-family:var(--serif);font-size:1rem;color:var(--text);margin-bottom:0.35rem;">Excellent posture reported</div>
+      <div style="font-size:0.82rem;color:var(--text-mid);">All 10 NIS2 Article 21(2) controls reported as fully implemented. Maintain through regular testing and continuous improvement.</div>
+    </div>`;
+  }
+
+  // --- CTA (for in-scope / possibly) ---
+  if (sr.state === "in-scope" || sr.state === "possibly") {
+    h += `<div class="cta-section">
+      <div class="cta-eyebrow">Next step</div>
+      <div class="cta-title">Get your full NIS2 Readiness Assessment</div>
+      <div class="cta-desc">Turn this self-assessment into a board-ready gap analysis with evidence-based findings, a prioritised remediation roadmap, and a complete Information Security Policy framework — delivered in 5 business days.</div>
+      <div class="cta-includes">
+        <span class="cta-tag">Scope determination</span>
+        <span class="cta-tag">Gap analysis vs Art. 21(2)</span>
+        <span class="cta-tag">Board-ready report</span>
+        <span class="cta-tag">Policy framework</span>
+        <span class="cta-tag">Remediation roadmap</span>
+      </div>
+      <div class="cta-bottom">
+        <div class="cta-price">€1,500 <span>fixed fee · 5 business days</span></div>
+        <button class="btn-cta" id="ctaBtn">Book a 30-min call →</button>
+      </div>
+    </div>`;
+  }
+
+  // --- EMAIL STATUS ---
+  h += `<div class="email-status" id="emailStatus"></div>`;
+
+  // --- DISCLAIMER ---
+  h += `<div class="disclaimer">
+    <strong>Important:</strong> This assessment is a self-reported screening tool only — it is <strong>not legal advice</strong> and does not constitute a certified compliance determination. Scores are based on your own inputs and should be validated through independent audit. NIS2 transposition status is indicative as of mid-2025 and may have changed. Always engage qualified legal and compliance professionals before acting on these results.
+  </div>
+  <button class="restart-btn" id="restartBtn">↩ Start a new assessment</button>
+  </div>`;
+
+  container.innerHTML = h;
+
+  // ---- POST-INJECTION WIRING ----
+
+  // Animate gauge
+  setTimeout(() => {
+    const fill = document.getElementById("gaugeFill");
+    const numEl = document.getElementById("gaugeNum");
+    if (fill) {
+      const target = circumference - (score / 100) * circumference;
+      fill.style.strokeDashoffset = target;
+    }
+    // Count-up animation
+    if (numEl) {
+      let current = 0;
+      const duration = 1200;
+      const interval = 16;
+      const steps = duration / interval;
+      const increment = score / steps;
+      const counter = setInterval(() => {
+        current = Math.min(current + increment, score);
+        numEl.textContent = Math.round(current);
+        if (current >= score) clearInterval(counter);
+      }, interval);
+    }
+  }, 100);
+
+  // Animate gap bars
+  setTimeout(() => {
+    POSTURE_QS.forEach((q, i) => {
+      const ans = state.answers[q.id] || "none";
+      const pts = ans === "full" ? 10 : ans === "partial" ? 5 : 0;
+      const pct = (pts / 10) * 100;
+      const bar = document.getElementById(`bar${i}`);
+      if (bar) {
+        setTimeout(() => { bar.style.width = pct + "%"; }, i * 80);
+      }
+    });
+  }, 200);
+
+  // CTA button
   const ctaBtn = document.getElementById("ctaBtn");
   if (ctaBtn) {
-    ctaBtn.addEventListener("click", function() {
+    ctaBtn.addEventListener("click", () => {
       window.open("https://calendly.com/paolo-carner-bare-consult/30min", "_blank", "noopener,noreferrer");
     });
   }
 
-  sendEmail(state.answers.email, r).then(() => {
-    const el = document.getElementById("emailStatus");
-    if (el) {
-      el.innerHTML = `<div class="email-sent">
-        <div class="tick">✓</div>
-        <p>A copy of your assessment has been sent to <strong>${escapeHtml(state.answers.email)}</strong>. Check your inbox (and spam folder if needed).</p>
-      </div>`;
-    }
-  }).catch(() => {
-    const el = document.getElementById("emailStatus");
-    if (el) {
-      el.innerHTML = `<div class="email-sent" style="background:var(--amber-bg);border-color:#ddc97c;">
-        <div class="tick" style="background:var(--amber);">!</div>
-        <p>Your result is shown above. We could not send the email copy — please screenshot this page or <a href="mailto:info@bare-consult.com" style="color:var(--accent)">contact us directly</a>.</p>
-      </div>`;
-    }
+  // Restart
+  document.getElementById("restartBtn").addEventListener("click", () => {
+    state.phase = 1; state.step = 0; state.answers = {};
+    state.scopeResult = null; state.score = null;
+    render();
   });
 
-  document.getElementById("btnReassess").addEventListener("click", () => {
-    state.step = 0; state.answers = {}; state.result = null;
-    renderStep(0);
+  // Formspree: silent internal lead capture — customer never sees this
+  submitToFormspree(state.answers.email, sr, score, state.answers).catch(err => {
+    console.warn("Formspree lead capture failed:", err.message);
   });
 
-  document.getElementById("stepsContainer").scrollIntoView({ behavior:"smooth", block:"start" });
+  // Static contact nudge — shown once the result page renders
+  const statusEl = document.getElementById("emailStatus");
+  if (statusEl) {
+    statusEl.innerHTML = `<div class="email-sent-bar" style="align-items:flex-start;flex-direction:column;gap:0.35rem;">
+      <span style="font-weight:600;color:var(--green);">Questions about your results?</span>
+      <span>Write to us at <a href="mailto:info@bare-consult.com" style="color:var(--green);text-decoration:underline;text-underline-offset:2px;">info@bare-consult.com</a> — we typically reply within one business day.</span>
+    </div>`;
+  }
+
+  container.scrollIntoView({ behavior: "smooth", block: "start" });
 }
 
-// --- INIT ---
-renderStep(0);
+// ---- INIT ----
+render();
 </script>
 </body>
 </html>
