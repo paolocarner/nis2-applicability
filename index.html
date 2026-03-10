@@ -1001,6 +1001,46 @@ body::before {
   color: var(--amber);
 }
 
+/* ---- TOOLKIT CARD ---- */
+.toolkit-card {
+  background: var(--bg-card);
+  border: 1px solid rgba(20,184,166,0.2);
+  border-radius: var(--r);
+  padding: 1.5rem 1.75rem;
+  margin-bottom: 1rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.toolkit-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, var(--teal), transparent);
+  opacity: 0.5;
+}
+
+.btn-toolkit {
+  background: transparent;
+  border: 1px solid rgba(20,184,166,0.4);
+  border-radius: var(--r-sm);
+  padding: 0.6rem 1.25rem;
+  font-family: var(--sans);
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--teal);
+  cursor: pointer;
+  transition: all 0.15s;
+  letter-spacing: 0.02em;
+}
+
+.btn-toolkit:hover {
+  background: rgba(20,184,166,0.08);
+  border-color: var(--teal);
+  transform: translateY(-1px);
+}
+
 /* ---- DISCLAIMER ---- */
 .disclaimer {
   background: var(--bg-card);
@@ -1784,8 +1824,12 @@ function buildEmailStep() {
   el.innerHTML = `
     <div class="q-meta">Phase 3 — Your Results</div>
     <h2 class="q-title">Almost there — one last step</h2>
-    <p class="q-desc">Enter your work email to unlock your full results. We'll also be in touch if we think we can help.</p>
+    <p class="q-desc">Enter your work email to unlock your full results and get access to a free NIS2 starter toolkit.</p>
     ${scoreTeaserHtml}
+    <div style="display:flex;align-items:center;gap:0.6rem;background:rgba(20,184,166,0.06);border:1px solid rgba(20,184,166,0.18);border-radius:var(--r-sm);padding:0.7rem 0.9rem;margin-bottom:1.25rem;">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--teal);flex-shrink:0;"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg>
+      <span style="font-size:0.8rem;color:var(--teal);">Your results include a link to the free <strong>NIS2 SME Toolkit</strong> on GitHub — templates and checklists to start your compliance journey.</span>
+    </div>
     <div class="email-field">
       <label class="field-label" for="emailIn">Work email address</label>
       <input type="email" class="text-input" id="emailIn" placeholder="you@company.com"
@@ -1973,6 +2017,17 @@ function buildResult(container) {
     }
   }
 
+  // --- FREE TOOLKIT LINK ---
+  h += `<div class="toolkit-card" id="toolkitCard">
+    <div style="display:flex;align-items:center;gap:0.6rem;margin-bottom:0.6rem;">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--teal);flex-shrink:0;"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg>
+      <span style="font-family:var(--mono);font-size:0.62rem;letter-spacing:0.08em;text-transform:uppercase;color:var(--teal);">Free resource</span>
+    </div>
+    <div style="font-family:var(--serif);font-size:1rem;font-weight:600;color:var(--text);margin-bottom:0.35rem;">NIS2 SME Toolkit</div>
+    <p style="font-size:0.82rem;color:var(--text-mid);line-height:1.6;margin-bottom:1rem;">A free, open-source starting point for your NIS2 compliance journey — templates, checklists, and guidance aligned with the recommendations above.</p>
+    <button class="btn-toolkit" id="toolkitBtn">View on GitHub →</button>
+  </div>`;
+
   // --- CTA (for in-scope / possibly) ---
   if (sr.state === "in-scope" || sr.state === "possibly") {
     h += `<div class="cta-section">
@@ -2040,6 +2095,14 @@ function buildResult(container) {
         if (bar) setTimeout(() => { bar.style.width = pct + "%"; }, i * 80);
       });
     }, 200);
+  }
+
+  // Toolkit button
+  const toolkitBtn = document.getElementById("toolkitBtn");
+  if (toolkitBtn) {
+    toolkitBtn.addEventListener("click", () => {
+      window.open("https://github.com/paolocarner/nis2-sme-toolkit", "_blank", "noopener,noreferrer");
+    });
   }
 
   // CTA button
