@@ -1316,13 +1316,18 @@ function evaluateScope(a) {
 // ---- SCORE CALCULATION ----
 function computeScore(posture) {
   let total = 0;
+  let answered = 0;
   POSTURE_QS.forEach(q => {
     const ans = posture[q.id];
+    if (ans === "skipped" || ans === undefined) return;
+    answered++;
     if (ans === "full")    total += 10;
     else if (ans === "partial") total += 5;
-    // none = 0
   });
-  return total; // 0-100
+  // If all questions were skipped, return null to signal N/A
+  if (answered === 0) return null;
+  // If partially answered, scale to 100 based on answered questions only
+  return Math.round((total / (answered * 10)) * 100);
 }
 
 function scoreBand(score) {
@@ -1646,26 +1651,51 @@ function buildBridge() {
   const el = document.createElement("div");
   el.className = "phase-bridge";
 
-  const stateIcons = { "in-scope":"⚠️", "possibly":"🔍", "exempt":"✅", "check-law":"📋" };
+  const stateIcons  = { "in-scope":"⚠️", "possibly":"🔍", "exempt":"✅", "check-law":"📋" };
   const stateLabels = { "in-scope":"Likely In Scope", "possibly":"Possibly In Scope", "exempt":"Likely Exempt", "check-law":"Law Status Unclear" };
+  const isOptional  = r.state === "exempt" || r.state === "check-law";
+
+  const bodyByState = {
+    "in-scope":   "Now let's assess your current security posture against the 10 NIS2 Article 21(2) requirements — so we can calculate your readiness score and identify your specific gaps.",
+    "possibly":   "Even where scope is uncertain, understanding your posture is valuable. Let's assess your current security controls against the 10 NIS2 Article 21(2) requirements so you are prepared if scope is confirmed.",
+    "exempt":     "NIS2 does not appear to apply to your organisation — you are under no obligation to continue. That said, the posture assessment is still available if you would like to benchmark your security controls against the Article 21(2) measures. Good security practice applies regardless of regulatory scope.",
+    "check-law":  "There is no immediate legal obligation while your country's transposition is pending. The posture assessment is still available — if and when the law comes into force, you may become subject to NIS2 with little notice, so it is worth knowing where you stand.",
+  };
+
+  const nextLabel = isOptional ? "Assess my posture anyway →" : "Start posture assessment →";
+  const skipHtml  = isOptional
+    ? `<button class="btn-secondary" id="bBridgeSkip" style="flex:0;padding:0.75rem 1.5rem;">Skip to contact →</button>`
+    : "";
 
   el.innerHTML = `
     <div class="bridge-icon">🛡️</div>
     <div class="scope-result-mini ${escapeHtml(r.state)}">${stateIcons[r.state]} ${stateLabels[r.state]}</div>
     <h2>Scope determination complete</h2>
-    <p>${escapeHtml(r.subline)}<br><br>
-    Now let's assess your <strong style="color:var(--text)">current security posture</strong> against the 10 NIS2 Article 21(2) requirements — so we can calculate your readiness score and identify your specific gaps.</p>
-    <div class="btn-row" style="justify-content:center;border-top:none;padding-top:0;">
+    <p style="margin-bottom:0.75rem;">${escapeHtml(r.subline)}</p>
+    <p>${escapeHtml(bodyByState[r.state] || "")}</p>
+    <div class="btn-row" style="justify-content:center;border-top:none;padding-top:1.5rem;flex-wrap:wrap;">
       <button class="btn-back" id="bBridgeBack">← Revise scope</button>
-      <button class="btn-next" id="bBridgeNext" style="flex:0;padding:0.75rem 2rem;">Start posture assessment →</button>
+      <button class="btn-next" id="bBridgeNext" style="flex:0;padding:0.75rem 2rem;">${escapeHtml(nextLabel)}</button>
+      ${skipHtml}
     </div>`;
 
   el.querySelector("#bBridgeBack").addEventListener("click", () => {
     state.step = 4; state.phase = 1; render();
   });
+
   el.querySelector("#bBridgeNext").addEventListener("click", () => {
     state.phase = 2; render();
   });
+
+  if (isOptional) {
+    el.querySelector("#bBridgeSkip").addEventListener("click", () => {
+      // Fill unanswered posture questions with "skipped" so score renders as N/A rather than 0
+      POSTURE_QS.forEach(q => { if (!state.answers[q.id]) state.answers[q.id] = "skipped"; });
+      state.step = 15;
+      state.phase = 3;
+      render();
+    });
+  }
 
   return el;
 }
@@ -1737,20 +1767,25 @@ function buildEmailStep() {
   const el = document.createElement("div");
   el.className = "card";
 
-  // Preview the score as a teaser
+  // Preview the score as a teaser — may be null if posture was skipped
   const previewScore = computeScore(state.answers);
-  const band = scoreBand(previewScore);
+  const band = previewScore !== null ? scoreBand(previewScore) : null;
+  const scoreTeaserHtml = previewScore !== null
+    ? `<div style="display:flex;align-items:center;gap:0.75rem;background:var(--bg-2);border:1px solid var(--border-l);border-radius:var(--r-sm);padding:0.85rem 1rem;margin-bottom:1.25rem;">
+        <span style="font-family:var(--serif);font-size:1.6rem;font-weight:600;color:var(--text);">${previewScore}</span>
+        <span style="font-family:var(--mono);font-size:0.75rem;color:var(--text-dim);">/100</span>
+        <span class="score-band ${band.cls}" style="margin:0 0 0 0.25rem;">${band.label}</span>
+        <span style="font-size:0.78rem;color:var(--text-mid);margin-left:auto;">Your readiness score</span>
+      </div>`
+    : `<div style="background:var(--bg-2);border:1px solid var(--border-l);border-radius:var(--r-sm);padding:0.85rem 1rem;margin-bottom:1.25rem;font-size:0.84rem;color:var(--text-mid);">
+        Posture assessment skipped — your scope result is ready to view.
+      </div>`;
 
   el.innerHTML = `
     <div class="q-meta">Phase 3 — Your Results</div>
     <h2 class="q-title">Almost there — one last step</h2>
     <p class="q-desc">Enter your work email to unlock your full results. We'll also be in touch if we think we can help.</p>
-    <div style="display:flex;align-items:center;gap:0.75rem;background:var(--bg-2);border:1px solid var(--border-l);border-radius:var(--r-sm);padding:0.85rem 1rem;margin-bottom:1.25rem;">
-      <span style="font-family:var(--serif);font-size:1.6rem;font-weight:600;color:var(--text);">${previewScore}</span>
-      <span style="font-family:var(--mono);font-size:0.75rem;color:var(--text-dim);">/100</span>
-      <span class="score-band ${band.cls}" style="margin:0 0 0 0.25rem;">${band.label}</span>
-      <span style="font-size:0.78rem;color:var(--text-mid);margin-left:auto;">Your readiness score</span>
-    </div>
+    ${scoreTeaserHtml}
     <div class="email-field">
       <label class="field-label" for="emailIn">Work email address</label>
       <input type="email" class="text-input" id="emailIn" placeholder="you@company.com"
@@ -1810,37 +1845,45 @@ function buildEmailStep() {
 
 // ---- RESULT PAGE ----
 function buildResult(container) {
-  const score = state.score;
-  const band  = scoreBand(score);
-  const sr    = state.scopeResult;
+  const score   = state.score;          // null if posture was skipped
+  const hasScore = score !== null;
+  const band    = hasScore ? scoreBand(score) : null;
+  const sr      = state.scopeResult;
   const country = sr.country;
   const sector  = sr.sector;
 
   // Build HTML
   let h = `<div class="result-wrap">`;
 
-  // --- GAUGE ---
+  // --- GAUGE (or N/A panel if skipped) ---
   const circumference = 283;
-  const dashOffset = circumference - (score / 100) * circumference;
 
-  h += `<div class="gauge-section">
-    <div class="gauge-label">Compliance Readiness Score — Self-Reported</div>
-    <div class="gauge-wrap">
-      <svg class="gauge-svg" viewBox="0 0 180 95">
-        <path class="gauge-track" d="M 20 90 A 70 70 0 0 1 160 90" />
-        <path class="gauge-fill" id="gaugeFill"
-          d="M 20 90 A 70 70 0 0 1 160 90"
-          stroke="${band.gaugeColor}"
-          stroke-dasharray="${circumference}"
-          stroke-dashoffset="${circumference}" />
-        <text class="gauge-number" x="90" y="82" text-anchor="middle" id="gaugeNum">0</text>
-        <text class="gauge-denom" x="90" y="95" text-anchor="middle">/100</text>
-      </svg>
-    </div>
-    <div class="score-band ${band.cls}" style="margin:0 auto 0.5rem;">${band.label}</div>
-    <p class="gauge-desc">${escapeHtml(band.desc)}</p>
-    <div class="self-report-note">⚠ Score is based on self-reported answers. Not a certified audit result.</div>
-  </div>`;
+  if (hasScore) {
+    h += `<div class="gauge-section">
+      <div class="gauge-label">Compliance Readiness Score — Self-Reported</div>
+      <div class="gauge-wrap">
+        <svg class="gauge-svg" viewBox="0 0 180 95">
+          <path class="gauge-track" d="M 20 90 A 70 70 0 0 1 160 90" />
+          <path class="gauge-fill" id="gaugeFill"
+            d="M 20 90 A 70 70 0 0 1 160 90"
+            stroke="${band.gaugeColor}"
+            stroke-dasharray="${circumference}"
+            stroke-dashoffset="${circumference}" />
+          <text class="gauge-number" x="90" y="82" text-anchor="middle" id="gaugeNum">0</text>
+          <text class="gauge-denom" x="90" y="95" text-anchor="middle">/100</text>
+        </svg>
+      </div>
+      <div class="score-band ${band.cls}" style="margin:0 auto 0.5rem;">${band.label}</div>
+      <p class="gauge-desc">${escapeHtml(band.desc)}</p>
+      <div class="self-report-note">⚠ Score is based on self-reported answers. Not a certified audit result.</div>
+    </div>`;
+  } else {
+    h += `<div class="gauge-section" style="text-align:center;padding:1.5rem 2rem;">
+      <div class="gauge-label">Compliance Readiness Score</div>
+      <div style="font-family:var(--serif);font-size:1.1rem;color:var(--text-mid);margin:1rem 0 0.5rem;">Posture assessment not completed</div>
+      <p class="gauge-desc">You skipped the posture assessment. Your NIS2 scope result is shown below. Return to complete the posture section at any time for a personalised readiness score.</p>
+    </div>`;
+  }
 
   // --- VERDICT CARDS ---
   const stateLabels = { "in-scope":"Likely In Scope","possibly":"Possibly In Scope","exempt":"Likely Exempt","check-law":"Law Status Unclear" };
@@ -1859,73 +1902,75 @@ function buildResult(container) {
     </div>
   </div>`;
 
-  // --- GAP CHART ---
-  h += `<div class="gap-section">
-    <div class="section-header">
-      <span class="section-title">Article 21(2) Gap Assessment</span>
-      <span class="section-sub">10 measures</span>
-    </div>
-    <div class="gap-legend">
-      <div class="legend-item"><div class="legend-dot" style="background:var(--green)"></div>Implemented (10)</div>
-      <div class="legend-item"><div class="legend-dot" style="background:var(--amber)"></div>Partial (5)</div>
-      <div class="legend-item"><div class="legend-dot" style="background:var(--red)"></div>Not started (0)</div>
-    </div>`;
-
-  POSTURE_QS.forEach((q, i) => {
-    const ans = state.answers[q.id] || "none";
-    const pts = ans === "full" ? 10 : ans === "partial" ? 5 : 0;
-    const pct = (pts / 10) * 100;
-    const barCls = getBarClass(ans);
-    h += `<div class="gap-item">
-      <div class="gap-row">
-        <span class="gap-name">${escapeHtml(q.title)}</span>
-        <span class="gap-score-val">${pts}/10</span>
-      </div>
-      <div class="gap-bar-track">
-        <div class="gap-bar-fill ${barCls}" id="bar${i}" style="width:0%"></div>
-      </div>
-      <div class="gap-art">${escapeHtml(q.art)}</div>
-    </div>`;
-  });
-
-  h += `</div>`;
-
-  // --- RECOMMENDATIONS ---
-  // Sort by score ascending (lowest first = highest priority)
-  const sorted = POSTURE_QS
-    .map(q => ({ q, ans: state.answers[q.id] || "none" }))
-    .filter(({ ans }) => ans !== "full")
-    .sort((a, b) => {
-      const pts = { none: 0, partial: 5, full: 10 };
-      return pts[a.ans] - pts[b.ans];
-    });
-
-  if (sorted.length > 0) {
-    h += `<div class="rec-section">
+  // --- GAP CHART (only if posture was answered) ---
+  if (hasScore) {
+    h += `<div class="gap-section">
       <div class="section-header">
-        <span class="section-title">Personalised Recommendations</span>
-        <span class="section-sub">${sorted.length} action${sorted.length>1?"s":""}</span>
+        <span class="section-title">Article 21(2) Gap Assessment</span>
+        <span class="section-sub">10 measures</span>
+      </div>
+      <div class="gap-legend">
+        <div class="legend-item"><div class="legend-dot" style="background:var(--green)"></div>Implemented (10)</div>
+        <div class="legend-item"><div class="legend-dot" style="background:var(--amber)"></div>Partial (5)</div>
+        <div class="legend-item"><div class="legend-dot" style="background:var(--red)"></div>Not started (0)</div>
       </div>`;
 
-    sorted.forEach(({ q, ans }, i) => {
-      const p = getPriority(ans);
-      h += `<div class="rec-item">
-        <div class="rec-priority ${p.cls}">${p.label}</div>
-        <div class="rec-body">
-          <div class="rec-title">${escapeHtml(q.rec_title)}</div>
-          <div class="rec-desc">${escapeHtml(q.rec_desc)}</div>
-          <span class="rec-tag">${escapeHtml(q.art)}</span>
+    POSTURE_QS.forEach((q, i) => {
+      const ans = state.answers[q.id] || "none";
+      const pts = ans === "full" ? 10 : ans === "partial" ? 5 : 0;
+      const barCls = getBarClass(ans);
+      h += `<div class="gap-item">
+        <div class="gap-row">
+          <span class="gap-name">${escapeHtml(q.title)}</span>
+          <span class="gap-score-val">${pts}/10</span>
         </div>
+        <div class="gap-bar-track">
+          <div class="gap-bar-fill ${barCls}" id="bar${i}" style="width:0%"></div>
+        </div>
+        <div class="gap-art">${escapeHtml(q.art)}</div>
       </div>`;
     });
 
     h += `</div>`;
-  } else {
-    h += `<div class="rec-section" style="text-align:center;padding:2rem;">
-      <div style="font-size:1.5rem;margin-bottom:0.5rem;">🏆</div>
-      <div style="font-family:var(--serif);font-size:1rem;color:var(--text);margin-bottom:0.35rem;">Excellent posture reported</div>
-      <div style="font-size:0.82rem;color:var(--text-mid);">All 10 NIS2 Article 21(2) controls reported as fully implemented. Maintain through regular testing and continuous improvement.</div>
-    </div>`;
+  }
+
+  // --- RECOMMENDATIONS (only if posture was answered) ---
+  if (hasScore) {
+    const sorted = POSTURE_QS
+      .map(q => ({ q, ans: state.answers[q.id] || "none" }))
+      .filter(({ ans }) => ans !== "full" && ans !== "skipped")
+      .sort((a, b) => {
+        const pts = { none: 0, partial: 5, full: 10 };
+        return pts[a.ans] - pts[b.ans];
+      });
+
+    if (sorted.length > 0) {
+      h += `<div class="rec-section">
+        <div class="section-header">
+          <span class="section-title">Personalised Recommendations</span>
+          <span class="section-sub">${sorted.length} action${sorted.length>1?"s":""}</span>
+        </div>`;
+
+      sorted.forEach(({ q, ans }, i) => {
+        const p = getPriority(ans);
+        h += `<div class="rec-item">
+          <div class="rec-priority ${p.cls}">${p.label}</div>
+          <div class="rec-body">
+            <div class="rec-title">${escapeHtml(q.rec_title)}</div>
+            <div class="rec-desc">${escapeHtml(q.rec_desc)}</div>
+            <span class="rec-tag">${escapeHtml(q.art)}</span>
+          </div>
+        </div>`;
+      });
+
+      h += `</div>`;
+    } else {
+      h += `<div class="rec-section" style="text-align:center;padding:2rem;">
+        <div style="font-size:1.5rem;margin-bottom:0.5rem;">🏆</div>
+        <div style="font-family:var(--serif);font-size:1rem;color:var(--text);margin-bottom:0.35rem;">Excellent posture reported</div>
+        <div style="font-size:0.82rem;color:var(--text-mid);">All 10 NIS2 Article 21(2) controls reported as fully implemented. Maintain through regular testing and continuous improvement.</div>
+      </div>`;
+    }
   }
 
   // --- CTA (for in-scope / possibly) ---
@@ -1962,41 +2007,40 @@ function buildResult(container) {
 
   // ---- POST-INJECTION WIRING ----
 
-  // Animate gauge
-  setTimeout(() => {
-    const fill = document.getElementById("gaugeFill");
-    const numEl = document.getElementById("gaugeNum");
-    if (fill) {
-      const target = circumference - (score / 100) * circumference;
-      fill.style.strokeDashoffset = target;
-    }
-    // Count-up animation
-    if (numEl) {
-      let current = 0;
-      const duration = 1200;
-      const interval = 16;
-      const steps = duration / interval;
-      const increment = score / steps;
-      const counter = setInterval(() => {
-        current = Math.min(current + increment, score);
-        numEl.textContent = Math.round(current);
-        if (current >= score) clearInterval(counter);
-      }, interval);
-    }
-  }, 100);
-
-  // Animate gap bars
-  setTimeout(() => {
-    POSTURE_QS.forEach((q, i) => {
-      const ans = state.answers[q.id] || "none";
-      const pts = ans === "full" ? 10 : ans === "partial" ? 5 : 0;
-      const pct = (pts / 10) * 100;
-      const bar = document.getElementById(`bar${i}`);
-      if (bar) {
-        setTimeout(() => { bar.style.width = pct + "%"; }, i * 80);
+  // Animate gauge (only if score exists)
+  if (hasScore) {
+    setTimeout(() => {
+      const fill = document.getElementById("gaugeFill");
+      const numEl = document.getElementById("gaugeNum");
+      if (fill) {
+        const target = circumference - (score / 100) * circumference;
+        fill.style.strokeDashoffset = target;
       }
-    });
-  }, 200);
+      if (numEl) {
+        let current = 0;
+        const duration = 1200;
+        const interval = 16;
+        const steps = duration / interval;
+        const increment = score / steps;
+        const counter = setInterval(() => {
+          current = Math.min(current + increment, score);
+          numEl.textContent = Math.round(current);
+          if (current >= score) clearInterval(counter);
+        }, interval);
+      }
+    }, 100);
+
+    // Animate gap bars
+    setTimeout(() => {
+      POSTURE_QS.forEach((q, i) => {
+        const ans = state.answers[q.id] || "none";
+        const pts = ans === "full" ? 10 : ans === "partial" ? 5 : 0;
+        const pct = (pts / 10) * 100;
+        const bar = document.getElementById(`bar${i}`);
+        if (bar) setTimeout(() => { bar.style.width = pct + "%"; }, i * 80);
+      });
+    }, 200);
+  }
 
   // CTA button
   const ctaBtn = document.getElementById("ctaBtn");
