@@ -3,14 +3,14 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>NIS2 Compliance Readiness Assessment — BARE Consult</title>
+<title>NIS2 Compliance Readiness Assessment â€” paolocarner.com</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Serif:ital,wght@0,400;0,600;1,400&family=IBM+Plex+Sans:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 
 <style>
 /*============================================================
   NIS2 READINESS ASSESSMENT v2
-  Aesthetic: Security Operations Dashboard — dark slate,
+  Aesthetic: Security Operations Dashboard â€” dark slate,
   electric blue, sharp data typography. Authoritative but
   approachable. IBM Plex family throughout.
 ============================================================*/
@@ -301,7 +301,7 @@ body::before {
 .styled-select option, .styled-select optgroup { background: var(--bg-card); }
 
 .styled-select-wrap::after {
-  content: '▾';
+  content: 'â–¾';
   position: absolute;
   right: 1rem; top: 50%;
   transform: translateY(-50%);
@@ -927,7 +927,7 @@ body::before {
   padding: 0.2rem 0.65rem;
 }
 
-.cta-tag::before { content: '✓ '; color: var(--teal); }
+.cta-tag::before { content: 'âœ“ '; color: var(--teal); }
 
 .cta-bottom {
   display: flex;
@@ -1092,7 +1092,7 @@ body::before {
           <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
         </svg>
       </div>
-      <span class="brand-name">BARE Consult — NIS2</span>
+      <span class="brand-name">PAOLOCARNER.COM â€” NIS2</span>
     </div>
     <span class="version-tag">v2.0</span>
   </header>
@@ -1101,15 +1101,15 @@ body::before {
   <div class="phase-bar" id="phaseBar">
     <div class="phase-item">
       <div class="phase-track"><div class="phase-fill" id="pf1"></div></div>
-      <div class="phase-label" id="pl1">Phase 1 — Scope</div>
+      <div class="phase-label" id="pl1">Phase 1 â€” Scope</div>
     </div>
     <div class="phase-item">
       <div class="phase-track"><div class="phase-fill" id="pf2"></div></div>
-      <div class="phase-label" id="pl2">Phase 2 — Posture</div>
+      <div class="phase-label" id="pl2">Phase 2 â€” Posture</div>
     </div>
     <div class="phase-item">
       <div class="phase-track"><div class="phase-fill" id="pf3"></div></div>
-      <div class="phase-label" id="pl3">Phase 3 — Contact</div>
+      <div class="phase-label" id="pl3">Phase 3 â€” Contact</div>
     </div>
   </div>
 
@@ -1133,9 +1133,9 @@ body::before {
   NIS2 READINESS ASSESSMENT v2
   
   ARCHITECTURE:
-    Phase 1 (Q1-5):  Scope determination — country, sector, size
+    Phase 1 (Q1-5):  Scope determination â€” country, sector, size
     Bridge:          Show scope verdict, introduce Phase 2
-    Phase 2 (Q6-15): Security posture — one question per Art. 21(2) measure
+    Phase 2 (Q6-15): Security posture â€” one question per Art. 21(2) measure
     Phase 3 (Q16):   Email + consent
     Result:          Score gauge + gap chart + recommendations + CTA
 
@@ -1199,7 +1199,7 @@ const SECTORS = [
   { id:"water",        name:"Drinking water supply and distribution",                            annex:"I",  cls:"essential", override:true  },
   { id:"wastewater",   name:"Wastewater collection, treatment or discharge",                     annex:"I",  cls:"essential", override:false },
   { id:"digital",      name:"Digital infrastructure (IXPs, DNS, TLD, cloud, CDN, data centres, telecom)", annex:"I", cls:"essential", override:true },
-  { id:"ict_mgmt",     name:"ICT service management — B2B (managed/security services)",          annex:"I",  cls:"essential", override:false },
+  { id:"ict_mgmt",     name:"ICT service management â€” B2B (managed/security services)",          annex:"I",  cls:"essential", override:false },
   { id:"pubadmin",     name:"Public administration (central / regional government)",             annex:"I",  cls:"essential", override:true  },
   { id:"space",        name:"Space (ground-based infrastructure operators)",                     annex:"I",  cls:"essential", override:false },
   { id:"postal",       name:"Postal and courier services",                                       annex:"II", cls:"important", override:false },
@@ -1254,7 +1254,7 @@ const POSTURE_QS = [
     title: "Network & systems security",
     desc: "Do you apply systematic vulnerability management, patching, and network segmentation?",
     rec_title: "Strengthen network and systems security controls",
-    rec_desc: "Implement vulnerability scanning, critical patch SLA (≤48h), network segmentation, and secure configuration baselines. Establish a change management process with security impact assessment.",
+    rec_desc: "Implement vulnerability scanning, critical patch SLA (â‰¤48h), network segmentation, and secure configuration baselines. Establish a change management process with security impact assessment.",
   },
   {
     id: "effectiveness",
@@ -1314,7 +1314,7 @@ function evaluateScope(a) {
   const isUnsure  = !isLarge && !isMedium && (empUnsure || revUnsure);
 
   if (!sector || sector.annex === null) {
-    return { state:"exempt", headline:"Sector not listed — likely not in scope",
+    return { state:"exempt", headline:"Sector not listed â€” likely not in scope",
       subline:"NIS2 applies only to Annex I/II sectors.", country, sector, isLarge, isMedium };
   }
   if (country.status === "delay") {
@@ -1324,11 +1324,11 @@ function evaluateScope(a) {
   }
   if (country.status === "draft") {
     if (isLarge || sector.override) {
-      return { state:"possibly", headline:"Likely in scope — law imminent",
+      return { state:"possibly", headline:"Likely in scope â€” law imminent",
         subline:`${country.name}'s transposition bill is advanced. If enacted, you would be in scope.`,
         country, sector, isLarge, isMedium };
     }
-    return { state:"check-law", headline:"Monitor — law not yet in force",
+    return { state:"check-law", headline:"Monitor â€” law not yet in force",
       subline:`${country.name} is transposing NIS2 but the law is not yet enacted.`,
       country, sector, isLarge, isMedium };
   }
@@ -1338,17 +1338,17 @@ function evaluateScope(a) {
       country, sector, isLarge, isMedium };
   }
   if (isUnsure) {
-    return { state:"possibly", headline:"Possibly in scope — size unclear",
+    return { state:"possibly", headline:"Possibly in scope â€” size unclear",
       subline:"Your sector is covered but size thresholds could not be determined.",
       country, sector, isLarge, isMedium };
   }
   if (isLarge || isMedium) {
-    const sl = isLarge ? "large entity (≥250 employees or ≥€50M)" : "medium entity (≥50 employees and ≥€10M)";
-    return { state:"in-scope", headline:"Yes — you are likely in scope",
+    const sl = isLarge ? "large entity (â‰¥250 employees or â‰¥â‚¬50M)" : "medium entity (â‰¥50 employees and â‰¥â‚¬10M)";
+    return { state:"in-scope", headline:"Yes â€” you are likely in scope",
       subline:`As a ${sl} in NIS2 Annex ${sector.annex}, NIS2 applies in ${country.name}.`,
       country, sector, isLarge, isMedium };
   }
-  return { state:"exempt", headline:"Likely exempt — below size thresholds",
+  return { state:"exempt", headline:"Likely exempt â€” below size thresholds",
     subline:"NIS2 generally exempts micro/small entities. Verify Art. 2(2) exception.",
     country, sector, isLarge, isMedium };
 }
@@ -1389,7 +1389,7 @@ function getPriority(ans) {
   return                        { cls:"p-low",    label:"Low" };
 }
 
-// ---- FORMSPREE SUBMISSION (internal lead capture — sends to you) ----
+// ---- FORMSPREE SUBMISSION (internal lead capture â€” sends to you) ----
 async function submitToFormspree(email, scopeResult, score, posture) {
   const country = COUNTRIES.find(c => c.code === state.answers.country);
   const sector  = SECTORS.find(s => s.id === state.answers.sector);
@@ -1405,14 +1405,14 @@ async function submitToFormspree(email, scopeResult, score, posture) {
     email,
     "Country":              country ? country.name : state.answers.country,
     "Sector":               sector  ? sector.name  : state.answers.sector,
-    "Employees":            {under50:"Under 50","50plus":"50–249","250plus":"250+",unsure:"Not sure"}[state.answers.employees] || "",
-    "Annual turnover":      {under10m:"Under €10M","10mplus":"€10M–€49M","50mplus":"€50M+",unsure:"Not sure"}[state.answers.revenue] || "",
+    "Employees":            {under50:"Under 50","50plus":"50â€“249","250plus":"250+",unsure:"Not sure"}[state.answers.employees] || "",
+    "Annual turnover":      {under10m:"Under â‚¬10M","10mplus":"â‚¬10Mâ€“â‚¬49M","50mplus":"â‚¬50M+",unsure:"Not sure"}[state.answers.revenue] || "",
     "NIS2 scope verdict":   scopeResult.headline,
     "Scope state":          scopeResult.state,
-    "Readiness score":      `${score}/100 — ${band.label}`,
+    "Readiness score":      `${score}/100 â€” ${band.label}`,
     "Posture by measure":   postureLines,
     "Country law status":   country ? country.status : "",
-    "Consent given":        "Yes",
+    "Consent given":        posture.consent ? "Yes" : "No",
     "Submitted at":         new Date().toISOString(),
   };
 
@@ -1437,59 +1437,59 @@ Create this template at emailjs.com > Email Templates > New Template.
 Use the variable names exactly as shown (double curly braces).
 
 --- SUBJECT ---
-Your NIS2 Readiness Assessment — {{score}}/100 ({{band}})
+Your NIS2 Readiness Assessment â€” {{score}}/100 ({{band}})
 
 --- BODY (plain text recommended for deliverability) ---
 
 Dear colleague,
 
-Thank you for completing the BARE Consult NIS2 Readiness Assessment.
+Thank you for completing the NIS2 Readiness Assessment.
 Here is a summary of your results.
 
-─────────────────────────────────────────
-READINESS SCORE: {{score}}/100 — {{band}}
-─────────────────────────────────────────
+â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+READINESS SCORE: {{score}}/100 â€” {{band}}
+â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 {{band_desc}}
 
-─────────────────────────────────────────
+â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 NIS2 SCOPE DETERMINATION
-─────────────────────────────────────────
+â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 Verdict:  {{scope_verdict}}
 Country:  {{country}}
 Sector:   {{sector}}
 Detail:   {{scope_detail}}
 
-─────────────────────────────────────────
+â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 CONTROL GAP SUMMARY (Article 21(2))
-─────────────────────────────────────────
+â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 {{gaps_summary}}
 
-─────────────────────────────────────────
+â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 PERSONALISED RECOMMENDATIONS
-─────────────────────────────────────────
+â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 {{recommendations}}
 
-─────────────────────────────────────────
+â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 NEXT STEPS
-─────────────────────────────────────────
-This self-assessment identifies your gaps — a full NIS2 Readiness
+â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+This self-assessment identifies your gaps â€” a full NIS2 Readiness
 Assessment turns them into a board-ready report with evidence-based
 findings and a prioritised remediation roadmap.
 
-Fixed fee: €1,500 · Delivered in 5 business days
+Fixed fee: â‚¬1,500 Â· Delivered in 5 business days
 
 Book a free 30-minute scoping call:
 {{cta_url}}
 
-─────────────────────────────────────────
+â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 IMPORTANT DISCLAIMER
-─────────────────────────────────────────
+â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 This assessment is a self-reported screening tool only. It is not
 legal advice and does not constitute a certified compliance
 determination. Always engage qualified professionals before acting
 on these results.
 
-BARE Consult · www.bare-consult.com
+Paolo Carner Â· www.paolocarner.com
 To unsubscribe, reply with "unsubscribe" in the subject line.
 
 ============================================================
@@ -1571,22 +1571,22 @@ function render() {
 const SCOPE_STEPS = [
   { id:"country",   title:"Where is your company headquartered?",
     desc:"NIS2 applies per the member state where you are established. Multi-country: select primary HQ.",
-    type:"select", optionsFrom:"countries", placeholder:"Select a country…" },
+    type:"select", optionsFrom:"countries", placeholder:"Select a countryâ€¦" },
   { id:"sector",    title:"Which sector does your organisation operate in?",
     desc:"NIS2 applies only to organisations in the 18 sectors listed in Annexes I and II.",
-    type:"select", optionsFrom:"sectors", placeholder:"Select a sector…" },
+    type:"select", optionsFrom:"sectors", placeholder:"Select a sectorâ€¦" },
   { id:"employees", title:"How many employees does your company have?",
-    desc:"Use FTE count across the group. Micro: <10 · Small: 10–49 · Medium: 50–249 · Large: 250+",
+    desc:"Use FTE count across the group. Micro: <10 Â· Small: 10â€“49 Â· Medium: 50â€“249 Â· Large: 250+",
     type:"radio",
-    options:[{v:"under50",l:"Under 50"},{v:"50plus",l:"50 – 249"},{v:"250plus",l:"250 or more"},{v:"unsure",l:"Not sure"}] },
+    options:[{v:"under50",l:"Under 50"},{v:"50plus",l:"50 â€“ 249"},{v:"250plus",l:"250 or more"},{v:"unsure",l:"Not sure"}] },
   { id:"revenue",   title:"What is your annual net turnover?",
     desc:"EU SME definition applies. Either employees OR revenue meeting the threshold triggers scope.",
     type:"radio",
-    options:[{v:"under10m",l:"Under €10M"},{v:"10mplus",l:"€10M – €49M"},{v:"50mplus",l:"€50M or more"},{v:"unsure",l:"Not sure"}] },
+    options:[{v:"under10m",l:"Under â‚¬10M"},{v:"10mplus",l:"â‚¬10M â€“ â‚¬49M"},{v:"50mplus",l:"â‚¬50M or more"},{v:"unsure",l:"Not sure"}] },
   { id:"org_size",  title:"How would you describe your organisation?",
     desc:"This helps calibrate the depth of recommendations.",
     type:"radio",
-    options:[{v:"startup",l:"Start-up",sub:"<5 years, <50 staff"},{v:"sme",l:"SME",sub:"50–249 staff"},{v:"mid",l:"Mid-market",sub:"250–999 staff"},{v:"enterprise",l:"Enterprise",sub:"1000+ staff"}] },
+    options:[{v:"startup",l:"Start-up",sub:"<5 years, <50 staff"},{v:"sme",l:"SME",sub:"50â€“249 staff"},{v:"mid",l:"Mid-market",sub:"250â€“999 staff"},{v:"enterprise",l:"Enterprise",sub:"1000+ staff"}] },
 ];
 
 function buildScopeStep(stepIdx) {
@@ -1594,7 +1594,7 @@ function buildScopeStep(stepIdx) {
   const el = document.createElement("div");
   el.className = "card";
 
-  let h = `<div class="q-meta">Phase 1 — Scope · Question ${stepIdx+1} of 5</div>
+  let h = `<div class="q-meta">Phase 1 â€” Scope Â· Question ${stepIdx+1} of 5</div>
     <h2 class="q-title">${escapeHtml(s.title)}</h2>
     <p class="q-desc">${escapeHtml(s.desc)}</p>`;
 
@@ -1608,11 +1608,11 @@ function buildScopeStep(stepIdx) {
         h += `<option value="${escapeHtml(c.code)}" ${state.answers[s.id]===c.code?"selected":""}>${escapeHtml(c.name)}</option>`;
       });
     } else {
-      h += `<optgroup label="Annex I — Essential Sectors">`;
+      h += `<optgroup label="Annex I â€” Essential Sectors">`;
       opts.filter(o=>o.annex==="I").forEach(o => {
         h += `<option value="${escapeHtml(o.id)}" ${state.answers[s.id]===o.id?"selected":""}>${escapeHtml(o.name)}</option>`;
       });
-      h += `</optgroup><optgroup label="Annex II — Important Sectors">`;
+      h += `</optgroup><optgroup label="Annex II â€” Important Sectors">`;
       opts.filter(o=>o.annex==="II").forEach(o => {
         h += `<option value="${escapeHtml(o.id)}" ${state.answers[s.id]===o.id?"selected":""}>${escapeHtml(o.name)}</option>`;
       });
@@ -1640,8 +1640,8 @@ function buildScopeStep(stepIdx) {
   }
 
   h += `<div class="btn-row">
-    <button class="btn-back" id="bBack" ${stepIdx===0?"disabled":""}>← Back</button>
-    <button class="btn-next" id="bNext">Continue →</button>
+    <button class="btn-back" id="bBack" ${stepIdx===0?"disabled":""}>â† Back</button>
+    <button class="btn-next" id="bNext">Continue â†’</button>
   </div>`;
 
   el.innerHTML = h;
@@ -1665,7 +1665,7 @@ function buildScopeStep(stepIdx) {
     }
     state.step++;
     if (state.step === 5) {
-      // Scope phase complete — compute scope result and show bridge
+      // Scope phase complete â€” compute scope result and show bridge
       state.scopeResult = evaluateScope(state.answers);
       state.phase = 1.5;
     }
@@ -1691,30 +1691,30 @@ function buildBridge() {
   const el = document.createElement("div");
   el.className = "phase-bridge";
 
-  const stateIcons  = { "in-scope":"⚠️", "possibly":"🔍", "exempt":"✅", "check-law":"📋" };
+  const stateIcons  = { "in-scope":"âš ï¸", "possibly":"ðŸ”", "exempt":"âœ…", "check-law":"ðŸ“‹" };
   const stateLabels = { "in-scope":"Likely In Scope", "possibly":"Possibly In Scope", "exempt":"Likely Exempt", "check-law":"Law Status Unclear" };
   const isOptional  = r.state === "exempt" || r.state === "check-law";
 
   const bodyByState = {
-    "in-scope":   "Now let's assess your current security posture against the 10 NIS2 Article 21(2) requirements — so we can calculate your readiness score and identify your specific gaps.",
+    "in-scope":   "Now let's assess your current security posture against the 10 NIS2 Article 21(2) requirements â€” so we can calculate your readiness score and identify your specific gaps.",
     "possibly":   "Even where scope is uncertain, understanding your posture is valuable. Let's assess your current security controls against the 10 NIS2 Article 21(2) requirements so you are prepared if scope is confirmed.",
-    "exempt":     "NIS2 does not appear to apply to your organisation — you are under no obligation to continue. That said, the posture assessment is still available if you would like to benchmark your security controls against the Article 21(2) measures. Good security practice applies regardless of regulatory scope.",
-    "check-law":  "There is no immediate legal obligation while your country's transposition is pending. The posture assessment is still available — if and when the law comes into force, you may become subject to NIS2 with little notice, so it is worth knowing where you stand.",
+    "exempt":     "NIS2 does not appear to apply to your organisation â€” you are under no obligation to continue. That said, the posture assessment is still available if you would like to benchmark your security controls against the Article 21(2) measures. Good security practice applies regardless of regulatory scope.",
+    "check-law":  "There is no immediate legal obligation while your country's transposition is pending. The posture assessment is still available â€” if and when the law comes into force, you may become subject to NIS2 with little notice, so it is worth knowing where you stand.",
   };
 
-  const nextLabel = isOptional ? "Assess my posture anyway →" : "Start posture assessment →";
+  const nextLabel = isOptional ? "Assess my posture anyway â†’" : "Start posture assessment â†’";
   const skipHtml  = isOptional
-    ? `<button class="btn-secondary" id="bBridgeSkip" style="flex:0;padding:0.75rem 1.5rem;">Skip to contact →</button>`
+    ? `<button class="btn-secondary" id="bBridgeSkip" style="flex:0;padding:0.75rem 1.5rem;">Skip to contact â†’</button>`
     : "";
 
   el.innerHTML = `
-    <div class="bridge-icon">🛡️</div>
+    <div class="bridge-icon">ðŸ›¡ï¸</div>
     <div class="scope-result-mini ${escapeHtml(r.state)}">${stateIcons[r.state]} ${stateLabels[r.state]}</div>
     <h2>Scope determination complete</h2>
     <p style="margin-bottom:0.75rem;">${escapeHtml(r.subline)}</p>
     <p>${escapeHtml(bodyByState[r.state] || "")}</p>
     <div class="btn-row" style="justify-content:center;border-top:none;padding-top:1.5rem;flex-wrap:wrap;">
-      <button class="btn-back" id="bBridgeBack">← Revise scope</button>
+      <button class="btn-back" id="bBridgeBack">â† Revise scope</button>
       <button class="btn-next" id="bBridgeNext" style="flex:0;padding:0.75rem 2rem;">${escapeHtml(nextLabel)}</button>
       ${skipHtml}
     </div>`;
@@ -1752,8 +1752,8 @@ function buildPostureStep(qIdx) {
     { v:"full",    l:"Fully implemented", sub:"Controls in place and tested",  scoreClass:"score-10" },
   ];
 
-  let h = `<div class="q-meta">Phase 2 — Security Posture · Control ${qIdx+1} of 10</div>
-    <div class="art-ref">⚡ ${escapeHtml(q.art)}</div>
+  let h = `<div class="q-meta">Phase 2 â€” Security Posture Â· Control ${qIdx+1} of 10</div>
+    <div class="art-ref">âš¡ ${escapeHtml(q.art)}</div>
     <h2 class="q-title">${escapeHtml(q.title)}</h2>
     <p class="q-desc">${escapeHtml(q.desc)}</p>
     <div class="opt-grid three" id="opts">`;
@@ -1772,8 +1772,8 @@ function buildPostureStep(qIdx) {
   h += `</div>
     <div class="field-err" id="fErr">Please select your current status.</div>
     <div class="btn-row">
-      <button class="btn-back" id="bBack">← Back</button>
-      <button class="btn-next" id="bNext">${qIdx === 9 ? "Continue to final step →" : "Continue →"}</button>
+      <button class="btn-back" id="bBack">â† Back</button>
+      <button class="btn-next" id="bNext">${qIdx === 9 ? "Continue to final step â†’" : "Continue â†’"}</button>
     </div>`;
 
   el.innerHTML = h;
@@ -1807,7 +1807,7 @@ function buildEmailStep() {
   const el = document.createElement("div");
   el.className = "card";
 
-  // Preview the score as a teaser — may be null if posture was skipped
+  // Preview the score as a teaser â€” may be null if posture was skipped
   const previewScore = computeScore(state.answers);
   const band = previewScore !== null ? scoreBand(previewScore) : null;
   const scoreTeaserHtml = previewScore !== null
@@ -1818,40 +1818,40 @@ function buildEmailStep() {
         <span style="font-size:0.78rem;color:var(--text-mid);margin-left:auto;">Your readiness score</span>
       </div>`
     : `<div style="background:var(--bg-2);border:1px solid var(--border-l);border-radius:var(--r-sm);padding:0.85rem 1rem;margin-bottom:1.25rem;font-size:0.84rem;color:var(--text-mid);">
-        Posture assessment skipped — your scope result is ready to view.
+        Posture assessment skipped â€” your scope result is ready to view.
       </div>`;
 
   el.innerHTML = `
-    <div class="q-meta">Phase 3 — Your Results</div>
-    <h2 class="q-title">Almost there — one last step</h2>
-    <p class="q-desc">Enter your work email to unlock your full results and get access to a free NIS2 starter toolkit.</p>
+    <div class="q-meta">Phase 3 â€” Your Results</div>
+    <h2 class="q-title">Your results are ready</h2>
+    <p class="q-desc">Optionally, leave your email if you'd like to be contacted about your results or receive NIS2 updates.</p>
     ${scoreTeaserHtml}
     <div style="display:flex;align-items:center;gap:0.6rem;background:rgba(20,184,166,0.06);border:1px solid rgba(20,184,166,0.18);border-radius:var(--r-sm);padding:0.7rem 0.9rem;margin-bottom:1.25rem;">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--teal);flex-shrink:0;"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg>
-      <span style="font-size:0.8rem;color:var(--teal);">Your results include a link to the free <strong>NIS2 SME Toolkit</strong> on GitHub — templates and checklists to start your compliance journey.</span>
+      <span style="font-size:0.8rem;color:var(--teal);">Your results include a link to the free <strong>NIS2 SME Toolkit</strong> on GitHub â€” templates and checklists to start your compliance journey.</span>
     </div>
     <div class="email-field">
-      <label class="field-label" for="emailIn">Work email address</label>
+      <label class="field-label" for="emailIn">Email address <span style="font-weight:400;color:var(--text-dim);font-size:0.82em;">(optional)</span></label>
       <input type="email" class="text-input" id="emailIn" placeholder="you@company.com"
              value="${escapeHtml(state.answers.email||"")}" autocomplete="email" spellcheck="false">
       <div class="field-err" id="emailErr">Please enter a valid email address.</div>
     </div>
     <div class="consent-box" id="consentBox">
       <input type="checkbox" id="consentChk" ${state.answers.consent?"checked":""}>
-      <label for="consentChk">I agree to be contacted by BARE Consult regarding NIS2 compliance.
+      <label for="consentChk">I agree to be contacted by Paolo Carner regarding NIS2 compliance.
         I have read the <a href="#" id="privacyLink" class="privacy-link">Privacy Notice</a>
         and consent to my email being used for this purpose. I can unsubscribe at any time.
       </label>
     </div>
     <div class="btn-row">
-      <button class="btn-back" id="bBack">← Back</button>
-      <button class="btn-next" id="bNext">Reveal my results →</button>
+      <button class="btn-back" id="bBack">â† Back</button>
+      <button class="btn-next" id="bNext">View my results â†’</button>
     </div>`;
 
   // Wire privacy link
   el.querySelector("#privacyLink").addEventListener("click", e => {
     e.preventDefault(); e.stopPropagation();
-    window.open("https://www.bare-consult.com/privacy-statement", "_blank", "noopener,noreferrer");
+    window.open("https://www.paolocarner.com/privacy-statement", "_blank", "noopener,noreferrer");
   });
 
   el.querySelector("#bBack").addEventListener("click", () => {
@@ -1865,20 +1865,21 @@ function buildEmailStep() {
   el.querySelector("#bNext").addEventListener("click", () => {
     const email = el.querySelector("#emailIn").value.trim();
     const consent = el.querySelector("#consentChk").checked;
+    const hasEmail = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email);
 
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) {
+    if (email && !hasEmail) {
       el.querySelector("#emailIn").classList.add("err");
       el.querySelector("#emailErr").classList.add("show");
       return;
     }
-    if (!consent) {
+    if (hasEmail && !consent) {
       el.querySelector("#consentBox").classList.add("err");
       setTimeout(() => el.querySelector("#consentBox").classList.remove("err"), 2000);
       return;
     }
 
-    state.answers.email = email;
-    state.answers.consent = true;
+    state.answers.email = hasEmail ? email : "";
+    state.answers.consent = hasEmail ? consent : false;
     state.score = computeScore(state.answers);
     state.phase = 4;
     render();
@@ -1904,7 +1905,7 @@ function buildResult(container) {
 
   if (hasScore) {
     h += `<div class="gauge-section">
-      <div class="gauge-label">Compliance Readiness Score — Self-Reported</div>
+      <div class="gauge-label">Compliance Readiness Score â€” Self-Reported</div>
       <div class="gauge-wrap">
         <svg class="gauge-svg" viewBox="0 0 180 95">
           <path class="gauge-track" d="M 20 90 A 70 70 0 0 1 160 90" />
@@ -1919,7 +1920,7 @@ function buildResult(container) {
       </div>
       <div class="score-band ${band.cls}" style="margin:0 auto 0.5rem;">${band.label}</div>
       <p class="gauge-desc">${escapeHtml(band.desc)}</p>
-      <div class="self-report-note">⚠ Score is based on self-reported answers. Not a certified audit result.</div>
+      <div class="self-report-note">âš  Score is based on self-reported answers. Not a certified audit result.</div>
     </div>`;
   } else {
     h += `<div class="gauge-section" style="text-align:center;padding:1.5rem 2rem;">
@@ -1940,7 +1941,7 @@ function buildResult(container) {
       <div class="vc-sub">${escapeHtml(sr.subline)}</div>
     </div>
     <div class="verdict-card">
-      <div class="vc-label">Country — ${country ? escapeHtml(country.name) : ""}</div>
+      <div class="vc-label">Country â€” ${country ? escapeHtml(country.name) : ""}</div>
       <div class="vc-badge ${country ? escapeHtml(country.status) : ""}">${country ? lawLabels[country.status] : ""}</div>
       <div class="vc-sub">${country ? escapeHtml(country.notes) : ""}</div>
     </div>
@@ -2010,7 +2011,7 @@ function buildResult(container) {
       h += `</div>`;
     } else {
       h += `<div class="rec-section" style="text-align:center;padding:2rem;">
-        <div style="font-size:1.5rem;margin-bottom:0.5rem;">🏆</div>
+        <div style="font-size:1.5rem;margin-bottom:0.5rem;">ðŸ†</div>
         <div style="font-family:var(--serif);font-size:1rem;color:var(--text);margin-bottom:0.35rem;">Excellent posture reported</div>
         <div style="font-size:0.82rem;color:var(--text-mid);">All 10 NIS2 Article 21(2) controls reported as fully implemented. Maintain through regular testing and continuous improvement.</div>
       </div>`;
@@ -2024,8 +2025,8 @@ function buildResult(container) {
       <span style="font-family:var(--mono);font-size:0.62rem;letter-spacing:0.08em;text-transform:uppercase;color:var(--teal);">Free resource</span>
     </div>
     <div style="font-family:var(--serif);font-size:1rem;font-weight:600;color:var(--text);margin-bottom:0.35rem;">NIS2 SME Toolkit</div>
-    <p style="font-size:0.82rem;color:var(--text-mid);line-height:1.6;margin-bottom:1rem;">A free, open-source starting point for your NIS2 compliance journey — templates, checklists, and guidance aligned with the recommendations above.</p>
-    <button class="btn-toolkit" id="toolkitBtn">View on GitHub →</button>
+    <p style="font-size:0.82rem;color:var(--text-mid);line-height:1.6;margin-bottom:1rem;">A free, open-source starting point for your NIS2 compliance journey â€” templates, checklists, and guidance aligned with the recommendations above.</p>
+    <button class="btn-toolkit" id="toolkitBtn">View on GitHub â†’</button>
   </div>`;
 
   // --- CTA (for in-scope / possibly) ---
@@ -2033,7 +2034,7 @@ function buildResult(container) {
     h += `<div class="cta-section">
       <div class="cta-eyebrow">Next step</div>
       <div class="cta-title">Get your full NIS2 Readiness Assessment</div>
-      <div class="cta-desc">Turn this self-assessment into a board-ready gap analysis with evidence-based findings, a prioritised remediation roadmap, and a complete Information Security Policy framework — delivered in 5 business days.</div>
+      <div class="cta-desc">Turn this self-assessment into a board-ready gap analysis with evidence-based findings, a prioritised remediation roadmap, and a complete Information Security Policy framework â€” delivered in 5 business days.</div>
       <div class="cta-includes">
         <span class="cta-tag">Scope determination</span>
         <span class="cta-tag">Gap analysis vs Art. 21(2)</span>
@@ -2042,8 +2043,8 @@ function buildResult(container) {
         <span class="cta-tag">Remediation roadmap</span>
       </div>
       <div class="cta-bottom">
-        <div class="cta-price">€1,500 <span>fixed fee · 5 business days</span></div>
-        <button class="btn-cta" id="ctaBtn">Book a 30-min call →</button>
+        <div class="cta-price">â‚¬1,500 <span>fixed fee Â· 5 business days</span></div>
+        <button class="btn-cta" id="ctaBtn">Book a 30-min call â†’</button>
       </div>
     </div>`;
   }
@@ -2053,9 +2054,9 @@ function buildResult(container) {
 
   // --- DISCLAIMER ---
   h += `<div class="disclaimer">
-    <strong>Important:</strong> This assessment is a self-reported screening tool only — it is <strong>not legal advice</strong> and does not constitute a certified compliance determination. Scores are based on your own inputs and should be validated through independent audit. NIS2 transposition status is indicative as of mid-2025 and may have changed. Always engage qualified legal and compliance professionals before acting on these results.
+    <strong>Important:</strong> This assessment is a self-reported screening tool only â€” it is <strong>not legal advice</strong> and does not constitute a certified compliance determination. Scores are based on your own inputs and should be validated through independent audit. NIS2 transposition status is indicative as of mid-2025 and may have changed. Always engage qualified legal and compliance professionals before acting on these results.
   </div>
-  <button class="restart-btn" id="restartBtn">↩ Start a new assessment</button>
+  <button class="restart-btn" id="restartBtn">â†© Start a new assessment</button>
   </div>`;
 
   container.innerHTML = h;
@@ -2120,17 +2121,17 @@ function buildResult(container) {
     render();
   });
 
-  // Formspree: silent internal lead capture — customer never sees this
+  // Formspree: silent internal lead capture â€” customer never sees this
   submitToFormspree(state.answers.email, sr, score, state.answers).catch(err => {
     console.warn("Formspree lead capture failed:", err.message);
   });
 
-  // Static contact nudge — shown once the result page renders
+  // Static contact nudge â€” shown once the result page renders
   const statusEl = document.getElementById("emailStatus");
   if (statusEl) {
     statusEl.innerHTML = `<div class="email-sent-bar" style="align-items:flex-start;flex-direction:column;gap:0.35rem;">
       <span style="font-weight:600;color:var(--green);">Questions about your results?</span>
-      <span>Write to us at <a href="mailto:info@bare-consult.com" style="color:var(--green);text-decoration:underline;text-underline-offset:2px;">info@bare-consult.com</a> — we typically reply within one business day.</span>
+      <span>Write to us at <a href="mailto:info@paolocarner.com" style="color:var(--green);text-decoration:underline;text-underline-offset:2px;">info@paolocarner.com</a> â€” we typically reply within one business day.</span>
     </div>`;
   }
 
